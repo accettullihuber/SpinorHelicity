@@ -3,6 +3,8 @@
 (* ::Title:: *)
 (*SpinorHelicity6D*)
 
+(* *)
+
 
 BeginPackage["SpinorHelicity6D`"]
 
