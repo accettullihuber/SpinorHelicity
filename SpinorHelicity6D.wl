@@ -20,6 +20,9 @@ MinusSignQ::usage="Tells you if its argument is negative"
 overbar::usage="Auxiliary function for OverBar."
 
 
+InverseDot::usage="InverseDot[x_List,y_List] performs the matrix product between the vector x and covector y returning a matrix."
+
+
 SpinorDot::usage="This is the generic tilde 4d spinor. It serves both for the \[Lambda] and the \[Mu], it takes four arguents SpinorDot[momlabel][type][upper][lower].
 The first labels the momentum, the second is either $lam or $mu and distinguishes between \[Lambda] and \[Mu], the firsd is for the upper index and the fourth is for the lower index. If no index
 of a certain kind is present the argument to be given is Null. Do not worry, you are not supposed to use this functions. The shortcuts directly give you what you are seeking."
@@ -58,7 +61,7 @@ Extramass::usage="auxiliary function for extramass"
 Extramasstilde::usage="auxiliary function for extramasstilde"
 
 
-KillMasses::usage="KillMasses[{a,b,c,...}] sets \[CapitalMu][a],\[CapitalMu][b],\[CapitalMu][c] and so on to zero (as well as \[CapitalMu] tilde)"
+KillMasses::usage="KillMasses[{a,b,c,...}] defines particles a,b,c,... as four dimensional and massless, thus \[CapitalMu][a],\[CapitalMu][b],\[CapitalMu][c] and so on are zero (as well as \[CapitalMu] tilde) as well as mp[a,a],mp[b,b],mp[c,c]..."
 Momenta4D::usage="This a variable which tells you which momenta have been specified to be 4 dimensional. It takes no argument of course."
 NewProcess::usage="NewProcess deletes all the downvalues of any function fixed during the computation of a given process. For example masses of particles that were previously set to zero (being 4D) are restore using this function. Also conservation relations stored in AllIdentities6D are cleared."
 ClearDownValues::usage="ClearDownValues[f] clears the downvalues of the function f given as an argument"
@@ -140,9 +143,15 @@ S6::usage="S6[p1,p2] is the six dimensional mandelstam invariant s=(p1+p2)^2 exp
 S6many::usage="S6many[p1,p2,...,pn] is teh six dimensional mandelstam invariant s=(p1+p2+...+pn)^2 in terms of the 4d objects"
 
 
-CompleteDenominators::usage="CompleteDenominators[exp] returns exp over a single denominator where spinor products have been completed to Mandelstam invariants."
+CompleteDenominators::usage="CompleteDenominators[exp] completes all spinor products in the denominator of exp to Mandelstam invariants."
 CompleteMandelstam::usage="CompleteMandelstam[exp] returns exp where as many spinor products as possible have been replaced with the corresponding four-dimensional Mandelstam invariants. CompleteMandelstam does only gather existing spinor products without adding new terms."
 ToChain::usage="ToChain[exp] returns exp where angle and square brackets are gathered together in chains of invariants."
+MinimalChains::usage="MinimalChains is an option for ToChain which allows True (default) or False as values. If set to False all chains will be completely contracted. So for example the square of a chain will appear as a single longer chain."
+RecursionLimit::usage="RecursionLimit is an option for ToChain. In order to make sure that ToChain recognises all possible contractions there is an internal loop repeating the same procedure multiple times untill the result does not change anymore. RecursionLimit sets a limit on this recursion in order to avoid endless loops. Default is 100."
+ChainMomCon::usage="ChainMomCon[exp,Options] applies momentum conservation to the chains appearing in exp. Options include MomCon which specifies the relations to be applied. Notice that in order for the chains to act linearly on a certain sum of momenta, these need to belong to MomList."
+ChainSimplify::usage="ChainSimplify[exp,Options] uses properties of the chains to simplify them, reducing them to chains where a given momentum appears at most once and scalar products. It allows for the options MomCon and ReduceComplete. Notice that in order for the simplifications to work best the momenta should be first declared through DeclareMom and massless momenta should be specified by KillMasses."
+MomCon::usage="MomCon is an option for ChainSimplify and ChainMomCon which allows to use momentum conservation to simplify the chains. It must to be defined as a list of replacements."
+ReduceComplete::usage="ReduceComplete is an option for ChainSimplify which assumes boolean values, default is False. If set to True the function will order the momenta inside the chains, removing in this way spurious structures which could be obtained from each other by reordering. Be aware that this might not actually reduce the number of terms in the expression because of the reordering procedure."
 Chain::usage="Chain[type1,first,momList,last,type2] is the invariant obtained chaining together angle and square brackest. Type1 and type2 assume values $angle or $bracket and represent the type of bracket with which the invariants start or end. First is the first momentum in the invariant, last is the last and momList are all the intermediate ones."
 chain::usage="chain is an auxiliary function for Chain. It has all the contraction properties one would expect from Chain."
 S::usage="Global variable used to Label six-dimensional Mandelstam invariants."
@@ -154,12 +163,26 @@ $angle::usage="Global variable of SpinorHelicity6D, labels angle brackets."
 $square::usage="Global variable of SpinorHelicity6D, labels square brackets."
 
 
-mp::usage="mp[p_a,p_b] is the scalar product fo momenta p_a and p_b. mp[] has the attribute Orderless."
+mp::usage="mp[p_a,p_b] is the four-dimensional scalar product fo momenta p_a and p_b. mp[] has the attribute Orderless."
+SetMp::usage="SetMp[list] takes as input a list of replacements of the type mp[x,y]->... and allows to fix given scalar products to a deisred value."
+Mps::usage="Mps is the list of scalar products which have been fixed to a certain value."
+ClearMp::usage="ClearMp[mp[p1,p2],...] clears the definitions of the scalar products given as arguments. If ClearMp is called without arguments all the scalar products are cleared."
 eps::usage="eps[p_a,p_b,p_c,p_d] is the Levi-Civita tensor contracted with the four momenta pa_,p_b,p_c and p_d."
-TrG::usage="TrG[mom_List] is the trace over the list of slashed momenta mom."
-TrG5::usage="TrG5[mom_List] is the trace over the slashed momenta of the list mom but has also a Gamma 5 matrix inserted in the first position of the trace."
+TrG::usage="TrG[mom_List] is the trace over the list of slashed four-dimensional momenta mom."
+TrG5::usage="TrG5[mom_List] is the trace over the slashed four-dimensional momenta of the list mom but has also a Gamma 5 matrix inserted in the first position of the trace."
 ToTrace::usage="ToTrace[exp] converts all closed chains in exp into traces and evaluates them. It admits the Option KillEpsilon whose default is False. If KillEpsilon is set to True the terms in the traces containing an epsilon tensor are set to zero."
+KillEpsilon::usage="KillEpsilon is an option for ToTrace whose default value is False. If set to True the Levi-Civita tensors which might appear when computing traces will be ignored."
 ScalProdToS::usage="ScalProdToS[exp] convert all the four-dimensional scalar products in exp to six dimensional mandelstam invariants S taking into account possible masses."
+
+
+MomList::usage="MomList is the list containing all the labels which have been declared to be momenta. Names for mon\[IGrave]menta can be declared through DeclareMom."
+DeclareMom::usage="DeclareMom[p] adds p to the list of momenta known to the package. Declaring momenta is not necessary but allows for the use of certain properties (like linearity) of functions like Chain and mp."
+UndeclareMom::usage="UndeclareMom[p] removes p from the list of known momenta"
+
+
+HelicityWeight::usage="HelicityWeight[exp] returns the helicity weight of exp in all the spinors appearing. The function only returns the non-vanishing spinor weights."
+MassDimension::usage="MassDimension[exp,OptionsPattern[]] retuns the mass dimension of exp. It allows for the option SetDimension."
+SetDimension::usage="Option for MassDimension, which allows to set the massdimension for constants as SetDimension->{constant->dimension}."
 
 
 Relabel::usage="Relabel[exp_,{LabelRep->{lab1->lab2,...},ScalarProduct->funtion}] allows to perform relabelings of the momenta inside the functions S[], S4[] and mp[]. These relabelings are specified by the optional argument LabelRep. Furthermore it allows to replace the definition of the scalar product given in SpinorHelicity6D with any given function (also optional feature). This is intended to be used when interfacing the results of SpinorHelicity6D with other Mathematica package. For example by setting ScalarProduct->sp will allow direct input of the results into LiteRed for integral reductions."
@@ -201,6 +224,14 @@ RandomSpinors::usage="RandomSpinors is an option for GenSpinors. It allows to ge
 $par::usage="Protected symbol. It is the default name of the variables in GenSpinors."
 
 
+MomMat4DN::usage="MomMat4DN[label][type] is the numeric momentum written as a mtarix in spinor representation. Type is either $up or $down and represents the position of the spinor indices."
+Mom4DN::usage="Mom4DN[label] is the four-dimensional numeric momentum vector associated to label."
+MomMat6DN::usage="MomMat6DN[label][type] is the six-dimensional momentum matrix. The argument type represents the position of the Lorentz indices."
+Mom6DN::usage="Mom6DN[label] is the six-dimensional numeric momentum vector associated to label."
+PauliSix::usage="PauliSix[i] is the i'th six-dimensional pauli matrix."
+MomToSpinors::usage="MomToSpinors[vector,label] generates the spinors associated to the given vector. This can be four-dimensional massless or massive or six-dimensional. The optional argument label allows to store the generated values of the spinors."
+
+
 ClearKinematics::usage="ClearKinematics clears all the so far generated and stored numerical values for the kinematics."
 
 
@@ -222,6 +253,8 @@ MDelta::usage="MDelta[dim][up1,up2][down1,down2] is the Kronecker delta in dimen
 
 MDeltaBox::usage="Just the boxing function for MDelta"
 $MDimension::usage="Global variable setting the dimension of MDelta. Default is 4."
+Delta::usage="Delta[up,down,options] is the Kronecker delta. It admits $DeltaDim as option which allows to set the dimension of the delta to the desired value. Default is $dim."
+$DeltaDim::usage="Option for Delta. Allows to set the dimension of the delta function to any desired value."
 
 
 Antisymmetrize::usage="Antisymmetrize[exp,{A1,...,An},{B1,...,Bm},...] returns exp antisymmetrized on the indices in the index lists. Be careful, the indices in the list need to be in the same order as in exp for all the signs to be correct in the output."
@@ -240,6 +273,8 @@ Polar::usage="Polar[mom,refmom][mu][Null] is the polarization vector for the par
 PolarPure::usage="PolarPure[mom,refmom] is the polarization vector for the particle with momentum mom and reference momentum refmom with Lorentz indices stripped off"
 Mom::usage="Mom[mom][mu][Null] represents the momentum for the particle with momentum mom and upper Lorentz index mu"
 MomPure::usage="MomPure[mom] represents the momentum of the particle with momentum mom with Lorentz index stripped off"
+MpToSpinors::usage="MpToSpinors[exp,plus,minus] converts scalar products of momenta and polarization vectors into spinors. Momenta are converted only if they are declared to be four dimensional and massless first (done with KillMasses). plus and minus are the list of positive and negative helicity particles appearing in expression, and are needed in order to correctly convert the polarizations. Both lists must always be present, even if empty."
+VecToSpinors::usage="VecToSpinors[exp,plus,minus] converts momenta and polarization vectors in vector form into spinors. Momenta are converted only if they are declared to be four dimensional and massless first (done with KillMasses). plus and minus are the list of positive and negative helicity particles appearing in expression, and are needed in order to correctly convert the polarizations. Both lists must always be present, even if empty."
 
 
 FeynCToSpinor::usage="FeynCToSpinor[exp,momenta_List] converst exp from FeynClac notation to SPinorHelicity6D notation. It requires a list of the momenta in exp to work properly, also it is just a first version covering parts of the FeynCalc functions. Any suggestions for improvements are welcome."
@@ -258,6 +293,11 @@ SpinorPalette::usage="Opens the palette associated to the package SpinorHelicity
 
 
 ClearSubValues::usage="ClearSubValues[f] clears all the SubValues of f leaving downvalues and upvalues intact."
+
+
+AssignFunctions::usage="AssignFunctions allows to define custom functions which are permanently stored in a an external file and are loaded automatically when the package is loaded. If called without arguments a list of the already defined functions is diplayed. To clear the defined the functions use ClearFunctions."
+ClearFunctions::usage="ClearFunctions allows to clear the functions defined through AssignFunctions. If called without arguments it clears all the custom functions and deletes the corresponding file."
+(*LoadFunctions::usage="LoadFunctions[] loads the custom functions stored through AssignFunctions."*)
 
 
 (* ::Section:: *)
@@ -301,6 +341,20 @@ MinusSignQ[x_]:=False
 
 
 (* ::Subsection::Closed:: *)
+(*MasslessQ*)
+
+
+MasslessQ[x_]:=MemberQ[Join[Momenta4D,Momenta4D/.{a_/;MemberQ[MomList,a]:>MomPure[a]}],x];
+
+
+(* ::Subsection::Closed:: *)
+(*InverseDot*)
+
+
+InverseDot[x_List,y_List]:=Table[i*j,{i,x},{j,y}];
+
+
+(* ::Subsection::Closed:: *)
 (*Extra mass*)
 
 
@@ -338,12 +392,29 @@ Extramasstilde /: MakeBoxes[Extramasstilde[x_],StandardForm|TraditionalForm]:=Ex
 (*KillMasses*)
 
 
-KillMasses[x_List]:=(
+(*KillMasses[x_List]:=(
 Unprotect[Extramass,Extramasstilde,Momenta4D];
 Do[Extramass[i]=0;Extramasstilde[i]=0,{i,x}];
 Momenta4D=x;
 Protect[Extramass,Extramasstilde,Momenta4D];
-);
+);*)
+
+
+(*KillMasses[x_List]:=(
+Unprotect[Extramass,Extramasstilde,Momenta4D,mp];
+Do[Extramass[i]=0;Extramasstilde[i]=0;SetMp[mp[i,i]->0],{i,x}];
+Momenta4D=x;
+Protect[Extramass,Extramasstilde,Momenta4D,mp];
+);*)
+
+
+KillMasses[moms__]:=Module[{x},
+x=Flatten[{moms}];
+Unprotect[Extramass,Extramasstilde,Momenta4D,mp];
+Do[Extramass[i]=0;Extramasstilde[i]=0;SetMp[mp[i,i]->0],{i,x}];
+Momenta4D={Momenta4D,x}//Flatten//DeleteDuplicates;
+Protect[Extramass,Extramasstilde,Momenta4D,mp];
+];
 
 
 (* ::Subsection::Closed:: *)
@@ -351,6 +422,18 @@ Protect[Extramass,Extramasstilde,Momenta4D];
 
 
 Momenta4D={};
+
+
+(* ::Subsection::Closed:: *)
+(*MomList, DeclareMom and UndeclareMom*)
+
+
+MomList={};
+Protect[MomList];
+
+DeclareMom[label__]:=(Unprotect[MomList];MomList=Join[MomList,Flatten[{label}]]//DeleteDuplicates;Protect[MomList];);
+
+UndeclareMom[label__]:=(Unprotect[MomList];MomList=DeleteCases[MomList,x_/;MemberQ[Flatten[{label}],x]]; Protect[MomList];);
 
 
 (* ::Subsection::Closed:: *)
@@ -364,7 +447,7 @@ ClearDownValues[f_]:=DownValues[f]=DeleteCases[DownValues[f],_?(FreeQ[First[#],P
 (*NewProcess*)
 
 
-NewProcess:=(Unprotect[Extramass,Extramasstilde,Momenta4D];ClearDownValues[Extramass];ClearDownValues[Extramasstilde];Momenta4D={};Protect[Extramass,Extramasstilde,Momenta4D];);
+NewProcess:=(Unprotect[Extramass,Extramasstilde,Momenta4D];ClearDownValues[Extramass];ClearDownValues[Extramasstilde];ClearMp[];Momenta4D={};Protect[Extramass,Extramasstilde,Momenta4D];);
 
 
 (* ::Subsection::Closed:: *)
@@ -554,6 +637,14 @@ If[frontend==1,
 SetOptions[EvaluationNotebook[],InputAliases -> DeleteDuplicates@Append[InputAliases /. Options[EvaluationNotebook[], InputAliases], "ltp" -> SpinorDotPureLBox["\[SelectionPlaceholder]"]]];
 SetOptions[EvaluationNotebook[],InputAliases -> DeleteDuplicates@Append[InputAliases /. Options[EvaluationNotebook[], InputAliases], "mtp" -> SpinorDotPureMBox["\[SelectionPlaceholder]"]]];
 ];
+
+
+(* ::Subsection:: *)
+(*SpinorUndotN and SpinorDotN*)
+
+
+SpinorDotN[OverBar[p_]][type_][pos_]:=SpinorDotN[OverBar[p]][type][pos]=SpinorDotN[p][$mu][pos];
+SpinorUndotN[OverBar[p_]][type_][pos_]:=SpinorUndotN[OverBar[p]][type][pos]=SpinorUndotN[p][$mu][pos];
 
 
 (* ::Subsection::Closed:: *)
@@ -976,7 +1067,7 @@ Protect[AngSquInvariant,SquAngInvariant,AngAngInvariant,SquSquInvariant,SpinorDo
 (*SpinorReplace*)
 
 
-$crep=1;
+(*$crep=1;
 SubCounter:=($crep=$crep+1;\[Alpha]*IntegerPart[$crep/2]);
 SpinorReplace[exp_,subs_List]:=Block[{locexp,locsubs,$a,$b},
 locexp=exp/.{
@@ -991,6 +1082,117 @@ locsubs[[i,2]]=locsubs[[i,2]][$a][$b];
 locexp=locexp/.locsubs;
 $crep=1;
 Return[locexp//ReleaseHold];
+];*)
+
+
+SpinorReplace[exp_,reps_]:=Catch[Block[{locexp,locreps,agwrapper,sqwrapper,SpinorAngleBracket,SpinorSquareBracket,Chain,special,dot},
+
+(*We replace Dot with a local defined dot symbol, because Dot has some properties which screw up our pattern matching later on*)
+locreps={reps}/.Dot->dot//Flatten;
+
+(*Apply linearity to the PureSpinors in terms of the globally defined momentum labels*)
+locreps=locreps/.{a_/;MemberQ[MomList,a]:>MomPure[a]};
+locreps=locreps//.{SpinorUndotPure[a_+b_][type_]/;!FreeQ[b,MomPure]:>SpinorUndotPure[a][type]+SpinorUndotPure[b][type],SpinorDotPure[a_+b_][type_]/;!FreeQ[b,MomPure]:>SpinorDotPure[a][type]+SpinorDotPure[b][type],SpinorUndotPure[a_*MomPure[x_]][type_]:>a*SpinorUndotPure[MomPure[x]][type],SpinorDotPure[a_*MomPure[x_]][type_]:>a*SpinorDotPure[MomPure[x]][type]};
+locreps=locreps/.{MomPure[x_]:>x};
+
+(*Isolate the replacements containing matrices which will get special treatment*)
+special=Select[locreps,(!FreeQ[#,dot]&)];
+locreps=Select[locreps,FreeQ[#,dot]&];
+
+(*Take into account the possible presence of \[Mu] spinors*)
+locreps=locreps/.{SpinorUndotPure[x_][$mu]:>SpinorUndotPure[OverBar[x]][$lam],SpinorDotPure[x_][$mu]:>SpinorDotPure[OverBar[x]][$lam]};
+
+(*Introduces two wrappers with respect to which we will define the properties which perform the actual replacement*)
+locreps=locreps/.{SpinorUndotPure[x_][$lam]:>agwrapper[x],SpinorDotPure[x_][$lam]:>sqwrapper[x]};
+
+(*Test the correcteness of the replacements*)
+If[AnyTrue[locreps,((FreeQ[#,agwrapper]&&FreeQ[#,sqwrapper])||(!FreeQ[#,agwrapper]&&!FreeQ[#,sqwrapper])&)],
+Throw["Some replacements are given in an unknown form. Please check input."];
+];
+
+(*Now we trnasform replacement rules for the wrappers into equalities*)
+locreps=locreps/.{Rule->Set,RuleDelayed->Set};
+
+(*Define linearity of brackets and chains with respect to the wrappers*)
+SpinorAngleBracket[a_+b_,c_]/;!FreeQ[b,agwrapper]:=SpinorAngleBracket[a,c]+SpinorAngleBracket[b,c];
+SpinorAngleBracket[c_,a_+b_]/;!FreeQ[b,agwrapper]:=SpinorAngleBracket[c,a]+SpinorAngleBracket[c,b];
+
+SpinorAngleBracket[a_*agwrapper[x_],y_]:=a*SpinorAngleBracket[agwrapper[x],y];
+SpinorAngleBracket[y_,a_*agwrapper[x_]]:=a*SpinorAngleBracket[y,agwrapper[x]];
+
+SpinorSquareBracket[a_+b_,c_]/;!FreeQ[b,sqwrapper]:=SpinorSquareBracket[a,c]+SpinorSquareBracket[b,c];
+SpinorSquareBracket[c_,a_+b_]/;!FreeQ[b,sqwrapper]:=SpinorSquareBracket[c,a]+SpinorSquareBracket[c,b];
+
+SpinorSquareBracket[a_*sqwrapper[x_],y_]:=a*SpinorSquareBracket[sqwrapper[x],y];
+SpinorSquareBracket[y_,a_*sqwrapper[x_]]:=a*SpinorSquareBracket[y,sqwrapper[x]];
+
+Chain[type1_,a_+b_,y_,z_,type2_]/;!FreeQ[b,agwrapper|sqwrapper]:=Chain[type1,a,y,z,type2]+Chain[type1,b,y,z,type2];
+Chain[type1_,x_,y_,a_+b_,type2_]/;!FreeQ[b,agwrapper|sqwrapper]:=Chain[type1,x,y,a,type2]+Chain[type1,x,y,b,type2];
+
+Chain[type1_,a_*agwrapper[x_],y_,z_,type2_]:=a*Chain[type1,agwrapper[x],y,z,type2];
+Chain[type1_,a_*sqwrapper[x_],y_,z_,type2_]:=a*Chain[type1,sqwrapper[x],y,z,type2];
+Chain[type1_,x_,y_,a_*agwrapper[z_],type2_]:=a*Chain[type1,x,y,agwrapper[z],type2];
+Chain[type1_,x_,y_,a_*sqwrapper[z_],type2_]:=a*Chain[type1,x,y,sqwrapper[z],type2];
+
+(*Now for the special replacements, if any*)
+If[Length[special]>0,
+(*Take into account \[Mu] spinors*)
+special=special/.{SpinorUndotPure[x_][$mu]:>SpinorUndotPure[OverBar[x]][$lam],SpinorDotPure[x_][$mu]:>SpinorDotPure[OverBar[x]][$lam]};
+(*Introduce the wrapper*)
+special=special/.{SpinorUndotPure[x_][$lam]:>agwrapper[x],SpinorDotPure[x_][$lam]:>sqwrapper[x]};
+(*Take into account the matrix products. When a matrix is dotted into an angle wrapper it transforms it into a square and the opposite way around*)
+special=special/.{dot[A__,agwrapper[x_]]:>If[OddQ[Length[{A}]],sqwrapper[{{A},x}],agwrapper[{{A},x}]],dot[A__,sqwrapper[x_]]:>If[OddQ[Length[{A}]],agwrapper[{{A},x}],sqwrapper[{{A},x}]]};
+(*Test the correcteness of the replacements*)
+If[AnyTrue[special,((FreeQ[#,agwrapper]&&FreeQ[#,sqwrapper])||(!FreeQ[#,agwrapper]&&!FreeQ[#,sqwrapper])&)],
+Throw["Some replacements are given in an unknown form. Please check input."];
+];
+(*Now we transform replacement rules for the wrappers into equalities*)
+special=special/.{Rule->Set,RuleDelayed->Set};
+(*And define the special properties of chains and brackets with respect to these wrappers*)
+SpinorAngleBracket[x_,agwrapper[{A_List,y_}]]:=If[OddQ[Length[A]],
+Chain[$angle,x,A,y,$square],
+Chain[$angle,x,A,y,$angle]
+];
+SpinorAngleBracket[agwrapper[{A_,x_}],y_]:=If[OddQ[Length[A]],
+-Chain[$square,x,Reverse[A],y,$angle],
+Chain[$angle,x,Reverse[A],y,$angle]
+];
+SpinorSquareBracket[x_,sqwrapper[{A_,y_}]]:=If[OddQ[Length[A]],
+Chain[$square,x,A,y,$angle],
+Chain[$square,x,A,y,$square]
+];
+SpinorSquareBracket[sqwrapper[{A_,x_}],y_]:=If[OddQ[Length[A]],
+-Chain[$angle,x,Reverse[A],y,$square],
+Chain[$square,x,Reverse[A],y,$square]
+];
+Chain[type_,x_,{y__},agwrapper[{A_,z_}],$angle]:=If[OddQ[Length[A]],
+Chain[type,x,{y,Sequence@@A},z,$square],
+Chain[type,x,{y,Sequence@@A},z,$angle]
+];
+Chain[$angle,agwrapper[{A_,x_}],{y__},z_,type_]:=If[OddQ[Length[A]],
+-Chain[$square,x,{Sequence@@Reverse[A],y},z,type],
+Chain[$angle,x,{Sequence@@Reverse[A],y},z,type]
+];
+Chain[type_,x_,{y__},sqwrapper[{A_,z_}],$square]:=If[OddQ[Length[A]],
+Chain[type,x,{y,Sequence@@A},z,$angle],
+Chain[type,x,{y,Sequence@@A},z,$square]
+];
+Chain[$square,sqwrapper[{A_,x_}],{y__},z_,type_]:=If[OddQ[Length[A]],
+-Chain[$angle,x,{Sequence@@Reverse[A],y},z,type],
+Chain[$square,x,{Sequence@@Reverse[A],y},z,type]
+];
+];
+
+(*Finally replace the arguments of SpinorAngleBracket, SpinorSquareBracket and Chain with the wrapped argumenst*)
+
+locexp=exp/.{SpinorAngleBracket[x_,y_]:>SpinorAngleBracket[agwrapper[x],agwrapper[y]],SpinorSquareBracket[x_,y_]:>SpinorSquareBracket[sqwrapper[x],sqwrapper[y]],
+Chain[$angle,x_,{y__},z_,$angle]:>Chain[$angle,agwrapper[x],{y},agwrapper[z],$angle],Chain[$square,x_,{y__},z_,$square]:>Chain[$square,sqwrapper[x],{y},sqwrapper[z],$square],Chain[$angle,x_,{y__},z_,$square]:>Chain[$angle,agwrapper[x],{y},sqwrapper[z],$square],Chain[$square,x_,{y__},z_,$angle]:>Chain[$square,sqwrapper[x],{y},agwrapper[z],$angle]};
+
+(*Properties will be automatically applied so we can now just remove the wrappers and return the output.*)
+locexp=locexp/.{agwrapper[x_]:>x,sqwrapper[x_]:>x};
+
+Return[locexp];
+];
 ];
 
 
@@ -1485,82 +1687,28 @@ Return[locexp];
 localexp=Together[exp];
 numtot=Numerator[localexp];
 dentot=Denominator[localexp];
-dentot=dentot/.{SpinorAngleBracket[x_,y_]:>S[x,y]/SpinorSquareBracket[y,x]};
-numden=Numerator[dentot]/.{SpinorSquareBracket[x_,y_]:>S[x,y]/SpinorAngleBracket[y,x]};
-dentot=numden/Denominator[dentot];
-Return[numtot/dentot];
-];*)
-
-
-(* ::Subsection::Closed:: *)
-(*CompleteDenominators*)
-
-
-CompleteDenominators[exp_]:=Module[{localexp,numtot,dentot,numden},
-localexp=Together[exp];
-numtot=Numerator[localexp];
-dentot=Denominator[localexp];
 dentot=dentot/.{SpinorAngleBracket[x_,y_]:>S4[x,y]/SpinorSquareBracket[y,x]};
 numden=Numerator[dentot]/.{SpinorSquareBracket[x_,y_]:>S4[x,y]/SpinorAngleBracket[y,x]};
 dentot=numden/Denominator[dentot];
 Return[numtot/dentot];
-];
-
-
-(* ::Subsection::Closed:: *)
-(*CompleteMandelstam*)
-
-
-(*CompleteMandelstam[exp_]:=Module[{localexp,numtot,dentot,numnum,dennum,denden,numden,numi},
-localexp=Together[exp];
-numtot={Numerator[localexp]}/.{Plus->List}//Flatten;
-dentot=Denominator[localexp];
-
-Do[
-numi=numtot[[i]];
-numi=numi/.{SpinorAngleBracket[x_,y_]:>S[x,y]/SpinorSquareBracket[y,x]};
-numnum=Numerator[numi];
-dennum=Denominator[numi]/.{SpinorSquareBracket[x_,y_]:>S[x,y]/SpinorAngleBracket[y,x]};
-numi=numnum/dennum;
-numtot[[i]]=numi;
-,{i,Length[numtot]}];
-numtot=Plus@@numtot;
-
-dentot=dentot/.{SpinorAngleBracket[x_,y_]:>S[x,y]/SpinorSquareBracket[y,x]};
-numden=Numerator[dentot];
-denden=Denominator[dentot]/.{SpinorSquareBracket[x_,y_]:>S[x,y]/SpinorAngleBracket[y,x]};
-dentot=numden/denden;
-
-Return[numtot/dentot];
 ];*)
 
 
+CompleteDenominators[exp_]:=exp/.{Power[SpinorAngleBracket[a_,b_],n_?Negative]:>Power[S4[a,b]/SpinorSquareBracket[b,a],n],Power[SpinorSquareBracket[a_,b_],n_?Negative]:>Power[S4[a,b]/SpinorAngleBracket[b,a],n]};
+
+
 (* ::Subsection::Closed:: *)
 (*CompleteMandelstam*)
 
 
-CompleteMandelstam[exp_]:=Module[{localexp,numtot,dentot,numnum,dennum,denden,numden,numi},
-localexp=Together[exp];
-numtot={Numerator[localexp]}/.{Plus->List}//Flatten;
-dentot=Denominator[localexp];
+(*Only works if both have the same power*)
+(*CompleteMandelstam[exp_]:=exp/.{SpinorAngleBracket[a_,b_]*SpinorSquareBracket[a_,b_]:>-S4[a,b],Power[SpinorAngleBracket[a_,b_],n_]*Power[SpinorSquareBracket[a_,b_],n_]:>Power[-S4[a,b],n]};*)
 
-Do[
-numi=numtot[[i]];
-numi=numi/.{SpinorAngleBracket[x_,y_]:>S4[x,y]/SpinorSquareBracket[y,x]};
-numnum=Numerator[numi];
-dennum=Denominator[numi]/.{SpinorSquareBracket[x_,y_]:>S4[x,y]/SpinorAngleBracket[y,x]};
-numi=numnum/dennum;
-numtot[[i]]=numi;
-,{i,Length[numtot]}];
-numtot=Plus@@numtot;
 
-dentot=dentot/.{SpinorAngleBracket[x_,y_]:>S4[x,y]/SpinorSquareBracket[y,x]};
-numden=Numerator[dentot];
-denden=Denominator[dentot]/.{SpinorSquareBracket[x_,y_]:>S4[x,y]/SpinorAngleBracket[y,x]};
-dentot=numden/denden;
-
-Return[numtot/dentot];
-];
+(*The large number of possible cases is given by the fact that exp^1 is not written as Power[exp,1] but simply as exp. For the denominator, where Power is always required there are in fact only two possible cases and thus two replacement rules.*)
+CompleteMandelstam[exp_]:=exp//.{SpinorAngleBracket[x_,y_]*SpinorSquareBracket[x_,y_]:>S4[x,y],
+SpinorAngleBracket[x_,y_]*Power[SpinorSquareBracket[x_,y_],n2_?Positive]:>S4[x,y]Power[SpinorSquareBracket[x,y],n2-1],Power[SpinorAngleBracket[x_,y_],n1_?Positive]SpinorSquareBracket[x_,y_]:>S4[x,y]Power[SpinorAngleBracket[x,y],n1-1],
+Power[SpinorAngleBracket[x_,y_],n1_?Positive]*Power[SpinorSquareBracket[x_,y_],n2_?Positive]/;n1>=n2:>Power[S4[x,y],n2]*Power[SpinorAngleBracket[x,y],n1-n2],Power[SpinorAngleBracket[x_,y_],n1_?Positive]*Power[SpinorSquareBracket[x_,y_],n2_?Positive]/;n1<n2:>Power[S4[x,y],n1]*Power[SpinorSquareBracket[x,y],n2-n1],Power[SpinorAngleBracket[x_,y_],n1_?Negative]*Power[SpinorSquareBracket[x_,y_],n2_?Negative]/;n1>=n2:> Power[S4[x,y],n1]*Power[SpinorSquareBracket[x,y],n2-n1],Power[SpinorAngleBracket[x_,y_],n1_?Negative]*Power[SpinorSquareBracket[x_,y_],n2_?Negative]/;n1<n2:> Power[S4[x,y],n2]*Power[SpinorAngleBracket[x,y],n1-n2]};
 
 
 (* ::Subsection::Closed:: *)
@@ -1570,17 +1718,18 @@ Return[numtot/dentot];
 ScalProdToS[exp_]:=exp/.{mp[i_,j_]:>S[i,j]/2+(extramass[i]extramasstilde[j]+extramass[j]extramasstilde[i])/2};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*chain*)
 
 
 (*Contraction properties of the chains*)
 (*SquareAngle to AngleSquare*)
-chain[$square,x_,k_List,y_,$angle]:=(-1)^(Length[k]+1)chain[$angle,y,k,x,$square]
+chain[$square,x_,k_List,y_,$angle]:=(-1)^(Length[k]+1)chain[$angle,y,Reverse[k],x,$square];
 (*AngleAngle with SquareSquare*)
 chain /: Times[chain[$angle,x_,k_List,y_,$angle],chain[$square,y_,q_List,z_,$square]]:=chain[$angle,x,Join[k,{y},q],z,$square];
 chain /: Times[chain[$angle,x_,k_List,y_,$angle],chain[$square,z_,q_List,y_,$square]]:=(-1)^(Length[q]+1)chain[$angle,x,Join[k,{y},Reverse[q]],z,$square];
 chain /: Times[chain[$angle,y_,k_List,x_,$angle],chain[$square,y_,q_List,z_,$square]]:=(-1)^(Length[k]+1)chain[$angle,x,Join[Reverse[k],{y},q],z,$square];
+chain /: Times[chain[$angle,y_,k_List,x_,$angle],chain[$square,z_,q_List,y_,$square]]:=chain[$square,z,Join[q,{y},k],x,$angle];
 (*AngleSquare with SquareSquare*)
 (*chain /: Times[chain[$square,x_,k_List,y_,$angle],chain[$square,y_,q_List,z_,$square]]:=chain[$square,x,Join[k,{y},q],z,$square];
 chain /: Times[chain[$square,x_,k_List,y_,$angle],chain[$square,z_,q_List,y_,$square]]:=(-1)^(Length[q]+1)chain[$square,x,Join[k,{y},q],z,$square];*)
@@ -1625,26 +1774,17 @@ chain /: MakeBoxes[chain[$square,x_,y_List,z_,$square],StandardForm|TraditionalF
 (*Chain*)
 
 
-(*(*Contraction properties of the chains*)
-(*SquareAngle to AngleSquare*)
-Chain[$square,x_,k_List,y_,$angle]:=(-1)^(Length[k]+1)Chain[$angle,y,k,x,$square]
-(*AngleAngle with SquareSquare*)
-Chain /: Times[Chain[$angle,x_,k_List,y_,$angle],Chain[$square,y_,q_List,z_,$square]]:=Chain[$angle,x,Join[k,{y},q],z,$square];
-Chain /: Times[Chain[$angle,x_,k_List,y_,$angle],Chain[$square,z_,q_List,y_,$square]]:=(-1)^(Length[q]+1)Chain[$angle,x,Join[k,{y},q],z,$square];
-Chain /: Times[Chain[$angle,y_,k_List,x_,$angle],Chain[$square,y_,q_List,z_,$square]]:=(-1)^(Length[k]+1)Chain[$angle,x,Join[k,{y},q],z,$square];
-(*AngleSquare with SquareSquare*)
-(*Chain /: Times[Chain[$square,x_,k_List,y_,$angle],Chain[$square,y_,q_List,z_,$square]]:=Chain[$square,x,Join[k,{y},q],z,$square];
-Chain /: Times[Chain[$square,x_,k_List,y_,$angle],Chain[$square,z_,q_List,y_,$square]]:=(-1)^(Length[q]+1)Chain[$square,x,Join[k,{y},q],z,$square];*)
-Chain /: Times[Chain[$angle,y_,k_List,x_,$square],Chain[$square,y_,q_List,z_,$square]]:=(-1)^(Length[k]+1)Chain[$square,x,Join[k,{y},q],z,$square];
-Chain /: Times[Chain[$angle,y_,k_List,x_,$square],Chain[$square,z_,q_List,y_,$square]]:=Chain[$square,z,Join[q,{y},k],x,$square];
-(*SquareAngle with AngleAngle*)
-Chain /: Times[Chain[$angle,x_,k_List,y_,$square],Chain[$angle,y_,q_List,z_,$angle]]:=Chain[$angle,x,Join[k,{y},q],z,$angle];
-Chain /: Times[Chain[$angle,x_,k_List,y_,$square],Chain[$angle,z_,q_List,y_,$angle]]:=(-1)^(Length[q]+1)Chain[$angle,x,Join[k,{y},q],z,$angle];
-(*Chain /: Times[Chain[$square,y_,k_List,x_,$angle],Chain[$angle,y_,q_List,z_,$angle]]:=(-1)^(Length[k]+1)Chain[$angle,x,Join[k,{y},q],z,$angle];
-Chain /: Times[Chain[$square,y_,k_List,x_,$angle],Chain[$angle,z_,q_List,y_,$angle]]:=Chain[$angle,z,Join[q,{y},k],x,$angle];*)
-(*AngleSquare with AngleSquare*)
-Chain /: Times[Chain[$angle,x_,k_List,y_,$square],Chain[$angle,y_,q_List,z_,$square]]:=Chain[$angle,x,Join[k,{y},q],z,$square];
+(*Removing minus signs from the external brackets*)
+(*(*Minus signs in the external brackest*)
+Chain[type1_,-x_,{y___},z_,type2_]/;MemberQ[MomList,x]:=I*Chain[type1,x,{y},z,type2];
+Chain[type1_,x_,{y___},-z_,type2_]/;MemberQ[MomList,z]:=I*Chain[type1,x,{y},z,type2];
+Chain[type1_,-x_,{y___},-z_,type2_]/;MemberQ[MomList,x]&&MemberQ[MomList,z]:=(-1)*Chain[type1,x,{y},z,type2];
 *)
+(*Minus signs in the external brackest*)
+Chain[type1_,x_?MinusSignQ,{y___},z_,type2_]:=I*Chain[type1,-x,{y},z,type2];
+Chain[type1_,x_,{y___},z_?MinusSignQ,type2_]:=I*Chain[type1,x,{y},-z,type2];
+Chain[type1_,x_?MinusSignQ,{y___},z_?MinusSignQ,type2_]:=(-1)*Chain[type1,-x,{y},-z,type2];
+
 
 (*Display of the chains*)
 AngleSquareChainBox[beginning_,args_,end_]:=TemplateBox[{beginning,args,end},"AngleSquareChain",
@@ -1670,43 +1810,35 @@ Chain /: MakeBoxes[Chain[$square,x_,y_List,z_,$square],StandardForm|TraditionalF
 
 
 (* ::Subsection::Closed:: *)
-(*ToChain*)
+(*ChainN*)
 
 
-(*ToChain[exp_]:=Block[{localexp,MyPower,counter},
-localexp=exp/.Power->MyPower;
-(*First we need to group things properly in order to apply the contraction properties, since Mathematica is not able to recognize things inside powers as contractible with things outside that power...*)
-If[FreeQ[localexp,MyPower]==False,
-localexp=localexp/.{A_*MyPower[B_,x_]/;FreeQ[A,MyPower]:>MyPower[A,1]*MyPower[B,x]};
-localexp=localexp//.MyPower[A_,x_]*MyPower[B_,x_]:>MyPower[A*B,x];
-localexp=localexp/.MyPower[A_,x_?Negative]:>1/MyPower[A,-x];
-localexp=localexp//.{MyPower[x_*A_,n_]*MyPower[B_,m_]/;n>m&&FreeQ[B,x]:>MyPower[x*A,n-m]MyPower[x*A*B,m]};
-localexp=localexp//.{MyPower[x_,n_]*MyPower[B_,m_]/;n>m&&FreeQ[B,x]:>MyPower[x,n-m]MyPower[x*B,m]};
+ChainN[type1_,p1_,{p2__},p3_,type2_]:=ChainN[type1,p1,{p2},p3,type2]=Module[{loc,momenta,pos,count},
+If[type2===$square,
+loc=SpinorDotN[p3][$lam][$up];
+count=0;
+,
+loc=SpinorUndotN[p3][$lam][$down];
+count=1;
 ];
-
-(*Now introduce the Chains and let them contract*)
-localexp=localexp/.{SpinorAngleBracket[x_,y_]:>chain[$angle,x,{},y,$angle],SpinorSquareBracket[x_,y_]:>chain[$square,x,{},y,$square]};
-
-(*Now replace the chain with Chain, where the first has all the contraction properties whereas the second does not and thus expressions stay as they are*)
-
-localexp=localexp/.{chain->Chain};
-
-(*Back to mathematica's Power*)
-localexp=localexp/.{MyPower->Power};
-
-(*Replace the single chains back with angle and square brackets*)
-localexp=localexp/.{Chain[$angle,x_,{},y_,$angle]:>SpinorAngleBracket[x,y],Chain[$square,x_,{},y_,$square]:>SpinorSquareBracket[x,y]};
-
-Return[localexp];
-];*)
+pos[n_?OddQ]:=$up;
+pos[n_?EvenQ]:=$down;
+Do[loc=MomMat4DN[i][pos[count++]].loc,{i,Reverse[{p2}]}];
+If[type1===$angle,
+loc=SpinorUndotN[p1][$lam][$up].loc;
+,
+loc=SpinorDotN[p1][$lam][$down].loc;
+];
+Return[loc];
+];
 
 
 (* ::Subsection::Closed:: *)
 (*ToChain*)
 
 
-ToChain[exp_]:=Block[{localexp,MyPower,counter},
-localexp=exp/.Power->MyPower;
+(*ToChainAux[exp_]:=Block[{localexp,MyPower,counter},
+localexp=exp/.{Power->MyPower,Chain->chain};
 (*First we need to group things properly in order to apply the contraction properties, since Mathematica is not able to recognize things inside powers as contractible with things outside that power...*)
 If[FreeQ[localexp,MyPower]==False,
 localexp=localexp/.{A_*MyPower[B_,x_]/;FreeQ[A,MyPower]:>MyPower[A,1]*MyPower[B,x]};
@@ -1729,6 +1861,269 @@ localexp=localexp/.{chain->Chain};
 localexp=localexp/.{Chain[$angle,x_,{},y_,$angle]:>SpinorAngleBracket[x,y],Chain[$square,x_,{},y_,$square]:>SpinorSquareBracket[x,y]};
 
 Return[localexp];
+];
+
+Options[ToChain]={MinimalChains->True,RecursionLimit->10};
+ToChain[exp_,OptionsPattern[]]:=Module[{expin,expout,count},
+expin=Null;
+expout=exp;
+count=0;
+While[!TrueQ[expin==expout],
+expin=expout;
+expout=ToChainAux[expin];
+If[count>=OptionValue[RecursionLimit],
+Print["Either the expression is very complicated or something has gone wrong. You can try increasing the RecursionLimit, if it still fails check your expression for errors."];
+Break[];
+];
+];
+
+(*Reduce the chains to minimal form if required*)
+
+If[TrueQ[OptionValue[MinimalChains]],
+expout=expout//.{Chain[$angle,x_,{y__,x_,z__},k_,type2_]/;OddQ[Length[{y}]]:>Chain[$angle,x,{y},x,$square]*Chain[$angle,x,{z},k,type2],
+Chain[$square,x_,{y__,x_,z__},k_,type2_]/;OddQ[Length[{y}]]:>Chain[$square,x,{y},x,$angle]*Chain[$square,x,{z},k,type2],
+Chain[type1_,k_,{y__,x_,z__},x_,$angle]/;OddQ[Length[{z}]]:>Chain[type1,k,{y},x,$angle]*Chain[$square,x,{z},x,$angle],
+Chain[type1_,k_,{y__,x_,z__},x_,$square]/;OddQ[Length[{z}]]:>Chain[type1,k,{y},x,$square]*Chain[$angle,x,{z},x,$square]};
+];
+
+Return[expout];
+];*)
+
+
+Options[ToChain]={MinimalChains->True};
+ToChain[exp_,OptionsPattern[]]:=Block[{ChainPow,locexp},
+(*Chain properties:*)
+
+(*Basics*)
+ChainPow[x__][0]:=1;
+
+(*Minus signs in the external brackest*)
+ChainPow[type1_,-x_,{y___},z_,type2_][n_]/;MemberQ[MomList,x]:=(I)^n*ChainPow[type1,x,{y},z,type2][n];
+ChainPow[type1_,x_,{y___},-z_,type2_][n_]/;MemberQ[MomList,z]:=(I)^n*ChainPow[type1,x,{y},z,type2][n];
+ChainPow[type1_,-x_,{y___},-z_,type2_][n_]/;MemberQ[MomList,x]&&MemberQ[MomList,z]:=(-1)^n*ChainPow[type1,x,{y},z,type2][n];
+
+(*SquareAngle as AngleSquare*)
+ChainPow[$square,x_,{y__},z_,$angle][n_]:=ChainPow[$angle,z,Reverse[{y}],x,$square][n];
+
+(*The actual contraction properties*)
+
+(* (x...y\[RightAngleBracket][y...z) *)
+ChainPow /: Times[ChainPow[type1_,x_,{k___},y_,$angle][n_?Positive],ChainPow[$square,y_,{q___},z_,type2_][m_?Positive]]:=If[n>=m,ChainPow[type1,x,{k,y,q},z,type2][m]ChainPow[type1,x,{k},y,$angle][n-m],
+ChainPow[type1,x,{k,y,q},z,type2][n]ChainPow[$square,y,{q},z,type2][m-n]
+];
+
+ChainPow /: Times[ChainPow[type1_,x_,{k___},y_,$angle][n_?Negative],ChainPow[$square,y_,{q___},z_,type2_][m_?Negative]]:=If[n<=m,ChainPow[type1,x,{k,y,q},z,type2][m]ChainPow[type1,x,{k},y,$angle][n-m],
+ChainPow[type1,x,{k,y,q},z,type2][n]ChainPow[$square,y,{q},z,type2][m-n]
+];
+
+(*\[LeftAngleBracket]y...x)[y...z) *)
+ChainPow /: Times[ChainPow[$angle,y_,{k___},x_,type1_][n_?Positive],ChainPow[$square,y_,{q___},z_,type2_][m_?Positive]]:=If[n>=m,
+(-1)^(m*(Length[{k}]+1))*ChainPow[type1,x,{Sequence@@Reverse[{k}],y,q},z,type2][m]ChainPow[$angle,y,{k},x,type1][n-m],
+(-1)^(n*(Length[{k}]+1))*ChainPow[type1,x,{Sequence@@Reverse[{k}],y,q},z,type2][n]ChainPow[$square,y,{q},z,type2][m-n]
+];
+
+ChainPow /: Times[ChainPow[$angle,y_,{k___},x_,type1_][n_?Negative],ChainPow[$square,y_,{q___},z_,type2_][m_?Negative]]:=If[n<=m,
+(-1)^(m*(Length[{k}]+1))*ChainPow[type1,x,{Sequence@@Reverse[{k}],y,q},z,type2][m]ChainPow[$angle,y,{k},x,type1][n-m],
+(-1)^(n*(Length[{k}]+1))*ChainPow[type1,x,{Sequence@@Reverse[{k}],y,q},z,type2][n]ChainPow[$square,y,{q},z,type2][m-n]
+];
+
+(*(x...y\[RightAngleBracket][y...z)*)
+ChainPow /: Times[ChainPow[type1_,x_,{k___},y_,$angle][n_?Positive],ChainPow[type2_,z_,{q___},y_,$square][m_?Positive]]:=If[n>=m,
+(-1)^(m*(Length[{q}]+1))*ChainPow[type1,x,{k,y,Sequence@@Reverse[{q}]},z,type2][m]ChainPow[type1,x,{k},y,$angle][n-m],
+(-1)^(n*(Length[{q}]+1))*ChainPow[type1,x,{k,y,Sequence@@Reverse[{q}]},z,type2][n]ChainPow[type2,z,{q},y,$square][m-n]
+];
+
+ChainPow /: Times[ChainPow[type1_,x_,{k___},y_,$angle][n_?Negative],ChainPow[type2_,z_,{q___},y_,$square][m_?Negative]]:=If[n<=m,
+(-1)^(m*(Length[{q}]+1))*ChainPow[type1,x,{k,y,Sequence@@Reverse[{q}]},z,type2][m]ChainPow[type1,x,{k},y,$angle][n-m],
+(-1)^(n*(Length[{q}]+1))*ChainPow[type1,x,{k,y,Sequence@@Reverse[{q}]},z,type2][n]ChainPow[type2,z,{q},y,$square][m-n]
+];
+
+(* \[LeftAngleBracket]y...x)(z...y] *)
+ChainPow /: Times[ChainPow[$angle,y_,{k___},x_,type1_][n_?Positive],ChainPow[type2_,z_,{q___},y_,$square][m_?Positive]]:=If[n>=m,
+ChainPow[type2,z,{q,y,k},x,type1][m]ChainPow[$angle,y,{k},x,type1][n-m],
+ChainPow[type2,z,{q,y,k},x,type1][n]ChainPow[type2,z,{q},y,$square][m-n]
+];
+
+ChainPow /: Times[ChainPow[$angle,y_,{k___},x_,type1_][n_?Negative],ChainPow[type2_,z_,{q___},y_,$square][m_?Negative]]:=If[n<=m,
+ChainPow[type2,z,{q,y,k},x,type1][m]ChainPow[$angle,y,{k},x,type1][n-m],
+ChainPow[type2,z,{q,y,k},x,type1][n]ChainPow[type2,z,{q},y,$square][m-n]
+];
+
+(*Applying the properties to the expression*)
+(*Convert angle and square brackets to Chains*)
+locexp=exp//.{SpinorAngleBracket[x_,y_]:>Chain[$angle,x,{},y,$angle],SpinorSquareBracket[x_,y_]:>Chain[$square,x,{},y,$square],Chain[x__]:>ChainPow[x][1],Power[Chain[x__],n_]:>ChainPow[x][n]};
+
+(*Expand part of the expression containing ChainPow in order for the contractions to happen*)
+locexp=Expand[locexp,ChainPow];
+
+(*Convert back to angle and square brackets*)
+locexp=locexp//.{Chain[$angle,x_,{},y_,$angle]:>SpinorAngleBracket[x,y],Chain[$square,x_,{},y_,$square]:>SpinorSquareBracket[x,y],ChainPow[x__][n_]:>Power[Chain[x],n]};
+
+(*Reduce the chains to minimal form if required*)
+
+If[TrueQ[OptionValue[MinimalChains]],
+locexp=locexp//.{Chain[$angle,x_,{y__,x_,z__},k_,type2_]/;OddQ[Length[{y}]]:>Chain[$angle,x,{y},x,$square]*Chain[$angle,x,{z},k,type2],
+Chain[$square,x_,{y__,x_,z__},k_,type2_]/;OddQ[Length[{y}]]:>Chain[$square,x,{y},x,$angle]*Chain[$square,x,{z},k,type2],
+Chain[type1_,k_,{y__,x_,z__},x_,$angle]/;OddQ[Length[{z}]]:>Chain[type1,k,{y},x,$angle]*Chain[$square,x,{z},x,$angle],
+Chain[type1_,k_,{y__,x_,z__},x_,$square]/;OddQ[Length[{z}]]:>Chain[type1,k,{y},x,$square]*Chain[$angle,x,{z},x,$square]};
+];
+
+Return[locexp];
+];
+
+
+(* ::Subsection::Closed:: *)
+(*ChainMomCon*)
+
+
+(*Options[ChainMomCon]={MomCon->{}};
+
+ChainMomCon[exp_,OptionsPattern[]]:=Catch[Block[{locexp,momcon,Chain,mom,mom2},
+momcon=OptionValue[MomCon];
+If[Head[momcon]===Rule||Head[momcon]==RuleDelayed,momcon={momcon}];
+(*Before applying ChainMomCon the user needs to declare which labels are momenta, which will be used to impose linearity for the Chain*)
+momcon=momcon/.{x_/;MemberQ[MomList,x]:>MomPure[x]};
+
+(*If no momentum conservation is defined return the original expression, or if it is ill defined returne error message and original expression*)
+Which[Length[momcon]==0,
+Throw[exp],
+!AllTrue[momcon,(Head[#]===Rule||Head[#]===RuleDelayed)&],
+Print["Momentum conservation entered in the wrong format, will proceed ignoring it."];
+Throw[exp],
+True,
+Null;
+];
+
+(*Else prepare the chains for the replacements*)
+locexp=exp/.{x_/;MemberQ[MomList,x]:>MomPure[x]};
+
+(*Define the linearity property of chains with respect to pure momenta and the rule to take constants out of the chains*)
+Chain[type1_,x1_,{x2___,A_*MomPure[y_]+B_,x3___},x4_,type2_]/;FreeQ[A,MomPure]:=A*Chain[type1,x1,{x2,MomPure[y],x3},x4,type2]+Chain[type1,x1,{x2,B,x3},x4,type2];
+Chain[type1_,x1_,{x2___,MomPure[y_]+B_,x3___},x4_,type2_]:=Chain[type1,x1,{x2,MomPure[y],x3},x4,type2]+Chain[type1,x1,{x2,B,x3},x4,type2];
+Chain[type1_,x1_,{x2___,Times[A_,MomPure[y_]],x3___},x4_,type2_]/;FreeQ[A,MomPure]:=A*Chain[type1,x1,{x2,MomPure[y],x3},x4,type2];
+
+(*Apply the replacement through rules*)
+Do[
+mom=First[i];
+mom2=Last[i];
+			(*If the momentum to be replaced appears at the extrema of a chain which is a Dirac trace we can move it. Notice that it must be replaced by a momentum which can be written in terms of spinors, i.e. a massless momentum*)
+		locexp=locexp/.{Chain[$angle,mom,{x___,y_?MasslessQ,z___},mom,$square]:>Chain[$angle,y,{z,mom,x},y,$square],Chain[$square,mom,{x___,y_?MasslessQ,z___},mom,$angle]:>Chain[$square,y,{z,mom,x},y,$angle]};
+(*Perform the actual momentum conservation replacement*)
+locexp=locexp/.Chain[t1_,x1_,{x2___,mom,x3___},x4_,t2_]:>Chain[t1,x1,{x2,mom2,x3},x4,t2];
+			,{i,momcon}];
+
+(*Return output*)
+locexp=locexp/.{MomPure[x_]:>x};
+Return[locexp];
+];
+];*)
+
+
+Options[ChainMomCon]={MomCon->{}};
+
+ChainMomCon[exp_,OptionsPattern[]]:=Catch[Block[{locexp,momcon,Chain,mom,mom2},
+momcon=OptionValue[MomCon];
+If[Head[momcon]===Rule||Head[momcon]==RuleDelayed,momcon={momcon}];
+(*Before applying ChainMomCon the user needs to declare which labels are momenta, which will be used to impose linearity for the Chain*)
+momcon=momcon/.{x_/;MemberQ[MomList,x]:>MomPure[x]};
+
+(*If no momentum conservation is defined return the original expression, or if it is ill defined returne error message and original expression*)
+Which[Length[momcon]==0,
+Throw[exp],
+!AllTrue[momcon,(Head[#]===Rule||Head[#]===RuleDelayed)&],
+Print["Momentum conservation entered in the wrong format, will proceed ignoring it."];
+Throw[exp],
+True,
+Null;
+];
+
+(*Else prepare the chains for the replacements*)
+locexp=exp/.{x_/;MemberQ[MomList,x]:>MomPure[x]};
+
+(*Define the linearity property of chains with respect to pure momenta and the rule to take constants out of the chains*)
+Chain[type1_,x1_,{x2___,A_*MomPure[y_]+B_,x3___},x4_,type2_]/;FreeQ[A,MomPure]:=A*Chain[type1,x1,{x2,MomPure[y],x3},x4,type2]+Chain[type1,x1,{x2,B,x3},x4,type2];
+Chain[type1_,x1_,{x2___,MomPure[y_]+B_,x3___},x4_,type2_]:=Chain[type1,x1,{x2,MomPure[y],x3},x4,type2]+Chain[type1,x1,{x2,B,x3},x4,type2];
+Chain[type1_,x1_,{x2___,Times[A_,MomPure[y_]],x3___},x4_,type2_]/;FreeQ[A,MomPure]:=A*Chain[type1,x1,{x2,MomPure[y],x3},x4,type2];
+
+(*Apply the replacement through rules*)
+Do[
+mom=First[i];
+mom2=Last[i];
+			(*If the momentum to be replaced appears at the extrema of a chain which is a Dirac trace we can move it. Notice that it must be replaced by a momentum which can be written in terms of spinors, i.e. a massless momentum*)
+		locexp=locexp/.{Chain[$angle,mom,{x___,y_?MasslessQ,z___},mom,$square]:>Chain[$angle,y,{z,mom,x},y,$square],Chain[$square,mom,{x___,y_?MasslessQ,z___},mom,$angle]:>Chain[$square,y,{z,mom,x},y,$angle]};
+(*Perform the actual momentum conservation replacement*)
+locexp=locexp/.{Chain[t1_,x1_,{x2___,mom,x3___},x4_,t2_]:>Chain[t1,x1,{x2,mom2,x3},x4,t2],mp[mom,x_]:>mp[mom2,x]};
+			,{i,momcon}];
+
+(*Return output*)
+locexp=locexp/.{MomPure[x_]:>x};
+Return[locexp];
+];
+];
+
+
+(* ::Subsection::Closed:: *)
+(*ChainOrder*)
+
+
+(*Auxiliary function whivh simply reorders the momenta in chains*)
+
+ChainOrder[exp_]:=Block[{Chain,locexp},
+(*Define properties which reorder the chains with momenta in canonical order*)
+Chain[type_,x1_,{y1___,z1_,z2_,y2___},x2_,type2_]/;OrderedQ[{z2,z1}]:=2*mp[z1,z2]*Chain[type,x1,{y1,y2},x2,type2]-Chain[type,x1,{y1,z2,z1,y2},x2,type2];
+(*Chains which reduce to Dirac traces can be further simplified including also the extrema in the ordering. Here however you need to be carefull because the traces are chiral so there is a hidden gamma5! In other words if y3 and y1 are of even length the angle and square brackets swap roles*)
+Chain[$angle,x_,{y1___,y2_,y3___},x_,$square]/;AnyTrue[{y1,y2,y3},MasslessQ]&&First[Sort[Select[{y1,y2,y3},MasslessQ]]]===y2&&OrderedQ[{y2,x}]:=
+If[OddQ[Length[{y3}]],
+Chain[$angle,y2,{y3,x,y1},y2,$square],
+Chain[$square,y2,{y3,x,y1},y2,$angle]];
+Chain[$square,x_,{y1___,y2_,y3___},x_,$angle]/;AnyTrue[{y1,y2,y3},MasslessQ]&&First[Sort[Select[{y1,y2,y3},MasslessQ]]]===y2&&OrderedQ[{y2,x}]:=
+If[OddQ[Length[{y3}]],
+Chain[$square,y2,{y3,x,y1},y2,$angle],
+Chain[$angle,y2,{y3,x,y1},y2,$square]];
+locexp=exp;
+Return[locexp];
+];
+
+
+(* ::Subsection::Closed:: *)
+(*ChainSimplify*)
+
+
+(*ChainSimplify[exp_]:=Block[{Chain,locexp},
+Chain[type_,x_,{x_,y___},z_,type2_]:=0;
+	Chain[type_,x_,{y___,z_},z_,type2_]:=0;
+	Chain[type_,x_,{y___,z_,z_,k___},l_,type2_]:=mp[z,z]*Chain[type,x,{y,k},l,type2];
+Chain[type1_,p1_,{x___,y_,l___,z_,y_,k___},p2_,type2_]:=2*mp[MomPure[y],MomPure[z]]*Chain[type1,p1,{x,y,l,k},p2,type2]-Chain[type1,p1,{x,y,l,y,z,k},p2,type2];
+Chain[t1_,x_,{y___,z_,x_,k___},p2_,t2_]:=2*mp[MomPure[z],MomPure[x]]Chain[t1,x,{y,k},p2,t2]-Chain[t1,x,{y,x,z,k},p2,t2];
+Chain[$angle,x_,{y_},x_,$square]:=2*mp[MomPure[x],MomPure[y]];
+Chain[$square,x_,{y_},x_,$angle]:=2*mp[MomPure[x],MomPure[y]];
+locexp=exp/.{Chain[$angle,x_,{},y_,$angle]:>SpinorAngleBracket[x,y],Chain[$square,x_,{},y_,$square]:>SpinorSquareBracket[x,y]};
+Return[locexp];
+];*)
+
+
+Options[ChainSimplify]={MomCon->{},ReduceComplete->False};
+
+ChainSimplify[exp_,OptionsPattern[]]:=Block[{Chain,locexp},
+Chain[type_,x_,{x_,y___},z_,type2_]:=0;
+	Chain[type_,x_,{y___,z_},z_,type2_]:=0;
+	Chain[type_,x_,{y___,z_,z_,k___},l_,type2_]:=mp[z,z]*Chain[type,x,{y,k},l,type2];
+Chain[type1_,p1_,{x___,y_,l___,z_,y_,k___},p2_,type2_]:=2*mp[MomPure[y],MomPure[z]]*Chain[type1,p1,{x,y,l,k},p2,type2]-Chain[type1,p1,{x,y,l,y,z,k},p2,type2];
+Chain[t1_,x_,{y___,z_,x_,k___},p2_,t2_]:=2*mp[MomPure[z],MomPure[x]]Chain[t1,x,{y,k},p2,t2]-Chain[t1,x,{y,x,z,k},p2,t2];
+Chain[$angle,x_,{y_},x_,$square]:=2*mp[MomPure[x],MomPure[y]];
+Chain[$square,x_,{y_},x_,$angle]:=2*mp[MomPure[x],MomPure[y]];
+
+(*Apply momentum conservation*)
+locexp=ChainMomCon[exp,{MomCon->OptionValue[MomCon]}];
+
+(*If ReduceComplete is et to True then reduce the structures as much as possible by also ordering things:*)
+
+If[OptionValue[ReduceComplete],
+locexp=ChainOrder[locexp];
+];
+
+locexp=locexp/.{Chain[$angle,x_,{},y_,$angle]:>SpinorAngleBracket[x,y],Chain[$square,x_,{},y_,$square]:>SpinorSquareBracket[x,y]};
+Return[locexp];
 ];
 
 
@@ -1736,11 +2131,32 @@ Return[localexp];
 (*ChainToSpinor*)
 
 
-ChainToSpinor[exp_]:=Module[{localexp},
+(*ChainToSpinor[exp_]:=Module[{localexp},
 localexp=exp;
 localexp=localexp/.{Chain[$angle,a_,b_,c_,$square]:>Spinoranglebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,2,Length[b],2}]Spinorsquarebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,1,Length[b]-1,2}],Chain[$square,a_,b_,c_,$angle]:>Spinorsquarebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,1,Length[b]-1,2}]Spinoranglebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,2,Length[b],2}],Chain[$angle,a_,b_,c_,$angle]:>Spinoranglebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,2,Length[b]-1,2}]Spinoranglebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,1,Length[b],2}],Chain[$square,a_,b_,c_,$square]:>Spinorsquarebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,1,Length[b],2}]Spinorsquarebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,2,Length[b]-1,2}],
 chain[$angle,a_,b_,c_,$square]:>Spinoranglebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,2,Length[b],2}]Spinorsquarebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,1,Length[b]-1,2}],chain[$angle,a_,b_,c_,$angle]:>Spinoranglebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,2,Length[b]-1,2}]Spinoranglebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,1,Length[b],2}],chain[$square,a_,b_,c_,$square]:>Spinorsquarebracket[a,b[[1]]]Product[Spinoranglebracket[b[[i]],b[[i+1]]],{i,1,Length[b],2}]Spinorsquarebracket[Last[b],c]Product[Spinorsquarebracket[b[[i]],b[[i+1]]],{i,2,Length[b]-1,2}]};
 Return[localexp];
+];*)
+
+
+ChainToSpinor[exp_]:=Block[{locexp,Chain},
+(*Define the local properties of Chain which will allow for the splitting*)
+Chain[$angle,a1_,{x___,y_,z___},a2_,type_]/;MasslessQ[y]:=If[OddQ[Length[{x,Null}]],
+Chain[$angle,a1,{x},y,$angle]*Chain[$square,y,{z},a2,type],
+Chain[$angle,a1,{x},y,$square]*Chain[$angle,y,{z},a2,type]];
+Chain[$square,a1_,{x___,y_,z___},a2_,type_]/;MasslessQ[y]:=If[OddQ[Length[{x,Null}]],
+Chain[$square,a1,{x},y,$square]*Chain[$angle,y,{z},a2,type],
+Chain[$square,a1,{x},y,$angle]*Chain[$square,y,{z},a2,type]
+];
+
+(*Define locexp and let the definitions act*)
+locexp=exp;
+
+(*Replace empty chains with angle and square brackets*)
+locexp=locexp/.{Chain[$angle,x_,{},y_,$angle]:>SpinorAngleBracket[x,y],Chain[$square,x_,{},y_,$square]:>SpinorSquareBracket[x,y]};
+
+(*Return output*)
+Return[locexp];
 ];
 
 
@@ -1748,15 +2164,142 @@ Return[localexp];
 (*mp*)
 
 
+(*mpBox[x_,y_]:=TemplateBox[{x,y},"ScalarProduct",
+DisplayFunction->(RowBox[{"(",#1,"\[CenterDot]",#2,")"}]&),
+InterpretationFunction->(RowBox[{"mp","[",#1,",",#2,"]"}]&)];
+
+(*In order to make it more user friendly we define the function in such a way that it automatically adds the MomPure to its argument if it is not already in that format.*)
+mp[x_]:=mp[x,x];
+mp[x_,y_]/;FreeQ[x,MomPure]&&FreeQ[x,PolarPure]:=mp[MomPure[x],y];
+
+
+mp /: MakeBoxes[mp[x_,y_],StandardForm|TraditionalForm]:=mpBox[ToBoxes[x],ToBoxes[y]];
+SetAttributes[mp,{Orderless,Protected}];*)
+
+
 mpBox[x_,y_]:=TemplateBox[{x,y},"ScalarProduct",
 DisplayFunction->(RowBox[{"(",#1,"\[CenterDot]",#2,")"}]&),
 InterpretationFunction->(RowBox[{"mp","[",#1,",",#2,"]"}]&)];
+
+(*Different display when the two momenta are equal*)
+
+mpBox[x_,x_]:=TemplateBox[{x},"ScalarProduct2",
+DisplayFunction->(SuperscriptBox[RowBox[{"(",#1,")"}],"2"]&),
+InterpretationFunction->(RowBox[{"mp","[",#1,",",#1,"]"}]&)];
+
+(*In order to make it more user friendly we define the function in such a way that it automatically adds the MomPure to its argument if it is not already in that format.*)
+mp[x_]:=mp[x,x];
+mp[x_,y_]/;FreeQ[x,MomPure]&&FreeQ[x,PolarPure]:=mp[MomPure[x]/.{a_/;MemberQ[MomList,a]:>MomPure[a]},y];
+
+(*Linearity in declared momenta*)
+mp[A_*MomPure[x_]+y_,z_]:=A*mp[MomPure[x],z]+mp[y,z];
+mp[MomPure[x_]+y_,z_]:=mp[MomPure[x],z]+mp[y,z];
+mp[Times[A_,x_],y_]:=A*mp[x,y];
+
+
 mp /: MakeBoxes[mp[x_,y_],StandardForm|TraditionalForm]:=mpBox[ToBoxes[x],ToBoxes[y]];
 SetAttributes[mp,{Orderless,Protected}];
 
 
+(* ::Subsection:: *)
+(*mpN6*)
+
+
+mpN6[x_]:=mpN6[x]=mpN6[x,x];
+mpN6[MomPure[x_],y_]:=mpN6[MomPure[x],y]=mpN6[x,y];
+mpN6[x_,MomPure[y_]]:=mpN6[x,MomPure[y]]=mpN6[x,y];
+mpN6[x_,y_]:=mpN6[x,y]=scalarprod[Mom6DN[x],Mom6DN[y]];
+
+
+(* ::Subsection::Closed:: *)
+(*SetMp*)
+
+
+(*(*List of fixed scalar products*)
+Mps={};
+Protect[Mps];
+
+(*Assigns certain values to given scalar products:*)
+SetMp[x_]:=(Unprotect[mp,Mps];
+AppendTo[Mps,Flatten[{x}]];
+DeleteCases[Flatten[{x}],y_/;FreeQ[y,mp]]/.{Rule->SetDelayed,RuleDelayed->SetDelayed};
+Protect[mp,Mps];)*)
+
+
+(*List of fixed scalar products*)
+Mps={};
+Protect[Mps];
+SetAttributes[SetMp,HoldAll];
+
+SetMp[x__]:=Module[{loclist,new},
+(*First inactivate mp in order to avoid undesired evaluations of already defined scalar products*)
+loclist=Flatten[Inactivate[{x},mp]];
+(*Delete the instances where mp does not appear, for any reason*)
+loclist=DeleteCases[loclist,y_/;FreeQ[y,mp]];
+new=First/@loclist;
+new=StringReplace[ToString[#,InputForm]&/@new,{"Inactive[mp]"->"mp"}];
+Unprotect[mp,Mps];
+Mps=DeleteCases[Mps,y_/;AnyTrue[new,StringContainsQ[y,#]&]];
+Mps=Join[Mps,StringReplace[ToString[#,InputForm]&/@loclist,{"Inactive[mp]"->"mp"}]];
+ClearDownValues[mp];
+new=ToExpression/@Mps/.{Rule->SetDelayed,RuleDelayed->SetDelayed, Equal->SetDelayed};
+Protect[mp,Mps];
+];
+
+
+(* ::Subsection::Closed:: *)
+(*ClearMP*)
+
+
+(*(*If ClearMp is called without any argument then all the scalar products are cleared, else only the specified values are reset.*)
+ClearMp[x___]:=Module[{loc},
+Unprotect[mp,Mps];
+If[Length[Flatten[{x}]]==0,
+ClearDownValues[mp];
+Mps={},
+Mps=DeleteCases[Mps,y_/;MemberQ[Flatten[{x}],First[y]]];
+ClearDownValues[mp];
+DeleteCases[Mps,y_/;FreeQ[y,mp]]/.{Rule->SetDelayed,RuleDelayed->SetDelayed};
+];
+Protect[mp,Mps];
+];*)
+
+
+(*If ClearMp is called without any argument then all the scalar products are cleared, else only the specified values are reset.*)
+
+SetAttributes[ClearMp,HoldAll];
+
+ClearMp[x___]:=Module[{loc,loclist,new},
+loclist=DeleteCases[Flatten[Inactivate[{x},mp]],y_/;FreeQ[y,mp]];
+new=StringReplace[ToString[#,InputForm]&/@loclist,{"Inactive[mp]"->"mp"}];
+Unprotect[mp,Mps];
+If[Length[loclist]==0,
+ClearDownValues[mp];
+Mps={},
+Mps=DeleteCases[Mps,y_/;AnyTrue[new,StringContainsQ[y,#]&]];
+new=Mps;
+ClearDownValues[mp];
+new=ToExpression/@new;
+new=new/.{Rule->SetDelayed,RuleDelayed->SetDelayed};
+];
+Protect[mp,Mps];
+];
+
+
 (* ::Subsection::Closed:: *)
 (*eps*)
+
+
+(*epsBox[a_,b_,c_,d_]:=TemplateBox[{a,b,c,d},"eps",
+DisplayFunction->(RowBox[{"\[Epsilon]","[",#1,",",#2,",",#3,",",#4,"]"}]&),
+InterpretationFunction->(RowBox[{"eps","[",#1,",",#2,",",#3,",",#4,"]"}]&)
+];
+eps /: MakeBoxes[eps[a_,b_,c_,d_],StandardForm|TraditionalForm]:=epsBox[ToBoxes[a],ToBoxes[b],ToBoxes[c],ToBoxes[d]];
+
+(*Contraction with twice the same vector vanishes*)
+eps[x___,y_,z___,y_,k___]:=0;
+(*Antisymmetry*)
+eps[x___,y_,z_,k___]/;OrderedQ[{z,y}]:=-eps[x,z,y,k];*)
 
 
 epsBox[a_,b_,c_,d_]:=TemplateBox[{a,b,c,d},"eps",
@@ -1767,6 +2310,14 @@ eps /: MakeBoxes[eps[a_,b_,c_,d_],StandardForm|TraditionalForm]:=epsBox[ToBoxes[
 
 (*Contraction with twice the same vector vanishes*)
 eps[x___,y_,z___,y_,k___]:=0;
+(*Antisymmetry*)
+eps[x___,y_,z_,k___]/;OrderedQ[{z,y}]:=-eps[x,z,y,k];
+(*Linearity with respect to declared momenta*)
+
+eps[x___,A_*MomPure[y_]+z_,k___]:=A*eps[x,MomPure[y],k]+eps[x,z,k];
+eps[x___,MomPure[y_]+z_,k___]:=eps[x,MomPure[y],k]+eps[x,z,k];
+eps[x___,Times[A_,MomPure[y_]],z___]:=A*eps[x,MomPure[y],z];
+
 
 SetAttributes[eps,Protected];
 
@@ -1793,18 +2344,39 @@ TrG5[x_List]:=mp[x[[-3]],x[[-2]]]*TrG5[Delete[x,{{-3},{-2}}]]+mp[x[[-2]],x[[-1]]
 (*ToTrace*)
 
 
-Options[ToTrace]={KillEpsilon->False}
-{KillEpsilon->False}
+Options[ToTrace]={KillEpsilon->False};
+
 ToTrace[exp_,OptionsPattern[]]:=Block[{eps,localexp},
+
+(*Convert the chains to traces*)
+localexp=exp/.{Chain[$angle,a_,b_List,a_,$square]:>(TrG[Join[{a},b]]-TrG5[Join[{a},b]])/2, Chain[$square,a_,b_List,a_,$angle]:>(TrG[Join[{a},b]]+TrG5[Join[{a},b]])/2};
+
+(*Remove epsilon if requested:*)
 Which[OptionValue[KillEpsilon],
-eps[x__]:=0,
+eps /: Times[eps[a1_,b1_,c1_,d1_],eps[a2_,b2_,c2_,d2_]] := -(mp[MomPure[a1],MomPure[d2]]*mp[MomPure[a2],MomPure[d1]]*mp[MomPure[b1],MomPure[c2]]*mp[MomPure[b2],MomPure[c1]]-mp[MomPure[a1],MomPure[c2]]*mp[MomPure[a2],MomPure[d1]]*mp[MomPure[b1],MomPure[d2]]*mp[MomPure[b2],MomPure[c1]]-mp[MomPure[a1],MomPure[d2]]*mp[MomPure[a2],MomPure[c1]]*mp[MomPure[b1],MomPure[c2]]*mp[MomPure[b2],MomPure[d1]]+mp[MomPure[a1],MomPure[c2]]*mp[MomPure[a2],MomPure[c1]]*mp[MomPure[b1],MomPure[d2]]*mp[MomPure[b2],MomPure[d1]]-mp[MomPure[a1],MomPure[d2]]*mp[MomPure[a2],MomPure[d1]]*mp[MomPure[b1],MomPure[b2]]*mp[MomPure[c1],MomPure[c2]]+mp[MomPure[a1],MomPure[b2]]*mp[MomPure[a2],MomPure[d1]]*mp[MomPure[b1],MomPure[d2]]*mp[MomPure[c1],MomPure[c2]]+mp[MomPure[a1],MomPure[d2]]*mp[MomPure[a2],MomPure[b1]]*mp[MomPure[b2],MomPure[d1]]*mp[MomPure[c1],MomPure[c2]]-mp[MomPure[a1],MomPure[a2]]*mp[MomPure[b1],MomPure[d2]]*mp[MomPure[b2],MomPure[d1]]*mp[MomPure[c1],MomPure[c2]]+mp[MomPure[a1],MomPure[c2]]*mp[MomPure[a2],MomPure[d1]]*mp[MomPure[b1],MomPure[b2]]*mp[MomPure[c1],MomPure[d2]]-mp[MomPure[a1],MomPure[b2]]*mp[MomPure[a2],MomPure[d1]]*mp[MomPure[b1],MomPure[c2]]*mp[MomPure[c1],MomPure[d2]]-mp[MomPure[a1],MomPure[c2]]*mp[MomPure[a2],MomPure[b1]]*mp[MomPure[b2],MomPure[d1]]*mp[MomPure[c1],MomPure[d2]]+mp[MomPure[a1],MomPure[a2]]*mp[MomPure[b1],MomPure[c2]]*mp[MomPure[b2],MomPure[d1]]*mp[MomPure[c1],MomPure[d2]]+mp[MomPure[a1],MomPure[d2]]*mp[MomPure[a2],MomPure[c1]]*mp[MomPure[b1],MomPure[b2]]*mp[MomPure[c2],MomPure[d1]]-mp[MomPure[a1],MomPure[b2]]*mp[MomPure[a2],MomPure[c1]]*mp[MomPure[b1],MomPure[d2]]*mp[MomPure[c2],MomPure[d1]]-mp[MomPure[a1],MomPure[d2]]*mp[MomPure[a2],MomPure[b1]]*mp[MomPure[b2],MomPure[c1]]*mp[MomPure[c2],MomPure[d1]]+mp[MomPure[a1],MomPure[a2]]*mp[MomPure[b1],MomPure[d2]]*mp[MomPure[b2],MomPure[c1]]*mp[MomPure[c2],MomPure[d1]]+mp[MomPure[a1],MomPure[b2]]*mp[MomPure[a2],MomPure[b1]]*mp[MomPure[c1],MomPure[d2]]*mp[MomPure[c2],MomPure[d1]]-mp[MomPure[a1],MomPure[a2]]*mp[MomPure[b1],MomPure[b2]]*mp[MomPure[c1],MomPure[d2]]*mp[MomPure[c2],MomPure[d1]]-mp[MomPure[a1],MomPure[c2]]*mp[MomPure[a2],MomPure[c1]]*mp[MomPure[b1],MomPure[b2]]*mp[MomPure[d1],MomPure[d2]]+mp[MomPure[a1],MomPure[b2]]*mp[MomPure[a2],MomPure[c1]]*mp[MomPure[b1],MomPure[c2]]*mp[MomPure[d1],MomPure[d2]]+mp[MomPure[a1],MomPure[c2]]*mp[MomPure[a2],MomPure[b1]]*mp[MomPure[b2],MomPure[c1]]*mp[MomPure[d1],MomPure[d2]]-mp[MomPure[a1],MomPure[a2]]*mp[MomPure[b1],MomPure[c2]]*mp[MomPure[b2],MomPure[c1]]*mp[MomPure[d1],MomPure[d2]]-mp[MomPure[a1],MomPure[b2]]*mp[MomPure[a2],MomPure[b1]]*mp[MomPure[c1],MomPure[c2]]*mp[MomPure[d1],MomPure[d2]]+mp[MomPure[a1],MomPure[a2]]*mp[MomPure[b1],MomPure[b2]]*mp[MomPure[c1],MomPure[c2]]*mp[MomPure[d1],MomPure[d2]]);
+eps /: Power[eps[a1_,b1_,c1_,d1_],n_?EvenQ]:=Power[-(mp[MomPure[a1], MomPure[d1]]^2*mp[MomPure[b1], MomPure[c1]]^2 - 2*mp[MomPure[a1], MomPure[c1]]*mp[MomPure[a1], MomPure[d1]]*
+  mp[MomPure[b1], MomPure[c1]]*mp[MomPure[b1], MomPure[d1]] + mp[MomPure[a1], MomPure[c1]]^2*mp[MomPure[b1], MomPure[d1]]^2 - 
+ mp[MomPure[a1], MomPure[d1]]^2*mp[MomPure[b1], MomPure[b1]]*mp[MomPure[c1], MomPure[c1]] + 
+ 2*mp[MomPure[a1], MomPure[b1]]*mp[MomPure[a1], MomPure[d1]]*mp[MomPure[b1], MomPure[d1]]*mp[MomPure[c1], MomPure[c1]] - 
+ mp[MomPure[a1], MomPure[a1]]*mp[MomPure[b1], MomPure[d1]]^2*mp[MomPure[c1], MomPure[c1]] + 
+ 2*mp[MomPure[a1], MomPure[c1]]*mp[MomPure[a1], MomPure[d1]]*mp[MomPure[b1], MomPure[b1]]*mp[MomPure[c1], MomPure[d1]] - 
+ 2*mp[MomPure[a1], MomPure[b1]]*mp[MomPure[a1], MomPure[d1]]*mp[MomPure[b1], MomPure[c1]]*mp[MomPure[c1], MomPure[d1]] - 
+ 2*mp[MomPure[a1], MomPure[b1]]*mp[MomPure[a1], MomPure[c1]]*mp[MomPure[b1], MomPure[d1]]*mp[MomPure[c1], MomPure[d1]] + 
+ 2*mp[MomPure[a1], MomPure[a1]]*mp[MomPure[b1], MomPure[c1]]*mp[MomPure[b1], MomPure[d1]]*mp[MomPure[c1], MomPure[d1]] + 
+ mp[MomPure[a1], MomPure[b1]]^2*mp[MomPure[c1], MomPure[d1]]^2 - mp[MomPure[a1], MomPure[a1]]*mp[MomPure[b1], MomPure[b1]]*
+  mp[MomPure[c1], MomPure[d1]]^2 - mp[MomPure[a1], MomPure[c1]]^2*mp[MomPure[b1], MomPure[b1]]*mp[MomPure[d1], MomPure[d1]] + 
+ 2*mp[MomPure[a1], MomPure[b1]]*mp[MomPure[a1], MomPure[c1]]*mp[MomPure[b1], MomPure[c1]]*mp[MomPure[d1], MomPure[d1]] - 
+ mp[MomPure[a1], MomPure[a1]]*mp[MomPure[b1], MomPure[c1]]^2*mp[MomPure[d1], MomPure[d1]] - 
+ mp[MomPure[a1], MomPure[b1]]^2*mp[MomPure[c1], MomPure[c1]]*mp[MomPure[d1], MomPure[d1]] + 
+ mp[MomPure[a1], MomPure[a1]]*mp[MomPure[b1], MomPure[b1]]*mp[MomPure[c1], MomPure[c1]]*mp[MomPure[d1], MomPure[d1]]),n/2];
+localexp=Expand[localexp,eps];
+localexp=localexp//.eps[x__]:>0;
+,
 OptionValue[KillEpsilon]==False,
 Null,
 True,
 Print["Undefined value for the option KillEpsilon. Only True or False are allowed. Proceed assuming default value False."];
 ];
-(*Convert the chains to traces*)
-localexp=exp/.{Chain[$angle,a_,b_List,a_,$square]:>(TrG[Join[{a},b]]-TrG5[Join[{a},b]])/2, Chain[$square,a_,b_List,a_,$angle]:>(TrG[Join[{a},b]]+TrG5[Join[{a},b]])/2};
 
 (*Return output*)
 Return[localexp];
@@ -2076,319 +2648,322 @@ SpinorSquareBracketN[OverBar[x_],y_]:=SpinorSquareBracketN[OverBar[x],y]=SpinorD
 SpinorSquareBracketN[OverBar[x_],OverBar[y_]]:=SpinorSquareBracketN[OverBar[x],OverBar[y]]=SpinorDotN[x][$mu][$down].SpinorDotN[y][$mu][$up];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Auxiliary functions for GenSpinors*)
 
 
-(*(*SimonB uses mp2*)
-mp2[i_List]:=i[[1]]*i[[1]]-i[[2]]*i[[2]]-i[[3]]*i[[3]]-i[[4]]*i[[4]];
-(*GenSpinors uses SimonB to generate kinematics when it is purely four-dimensional. SimonB generates the momentum-twistor parametrization by Simon Badger.*)
-SimonB[n_,x_]:=Module[{\[Xi],\[Eta],\[Phi],\[Chi],sol,t,sr,ls,sl,rs,P,p0,p1,p2,p3,spinors,AA,BB,AB,BA,\[CapitalPhi],\[CapitalChi],t3,t4,t1,t2},
-(*SIMON BADGER'S CHOICE OF VARIABLES*)
-(*definisco gli spinori angolo e braca e le loro contrazioni*)
-sr[i_]:={\[Xi][i],\[Eta][i]};(*vettore right, |i>*)
-ls[i_]:={\[Eta][i],-\[Xi][i]};(*covettore left, <i|*)
-sl[i_]:={\[Phi][i],\[Chi][i]};(*vettore left, |i]*)
-rs[i_]:={-\[Chi][i],\[Phi][i]};(*covettore right,[i|*)
-(*Definisco i momenti in funzione degli spinori, chiamandoli con P maiuscolo per distinguere da quelli generati con S@M*)
-P[i_]:={p0[i],p1[i],p2[i],p3[i]};
-p0[i_]:=(1/2)ls[i].IdentityMatrix[2].sl[i];
-p1[i_]:=(1/2)ls[i].PauliMatrix[1].sl[i];
-p2[i_]:=(1/2)ls[i].PauliMatrix[2].sl[i];
-p3[i_]:=(1/2)ls[i].PauliMatrix[3].sl[i];
-If[n==4,
-\[Xi][1]=1;
-\[Xi][2]=0;
-\[Xi][3]=1/x[1];
-\[Eta][1]=0;
-\[Eta][2]=1;
-\[Eta][3]=1;
-\[Eta][4]=1;
-\[Phi][1]=-1;
-\[Phi][4]=0;
-\[Chi][2]=0;
-sol=Solve[Sum[\[Xi][i]\[Phi][i],{i,n}]==0&&Sum[\[Xi][i]\[Chi][i],{i,n}]==0&&Sum[\[Eta][i]\[Phi][i],{i,n}]==0&&Sum[\[Eta][i]\[Chi][i],{i,n}]==0&&mp2[P[1]+P[2]]==x[1]&&mp2[P[3]+P[2]]/mp2[P[1]+P[2]]==x[2],{\[Xi][4],\[Phi][2],\[Phi][3],\[Chi][1],\[Chi][3],\[Chi][4]}];
-\[Xi][4]=sol[[1,1,2]];
-\[Phi][2]=sol[[1,2,2]];
-\[Phi][3]=sol[[1,3,2]];
-\[Chi][1]=sol[[1,4,2]];
-\[Chi][3]=sol[[1,5,2]];
-\[Chi][4]=sol[[1,6,2]];
+(* ::Subsubsection::Closed:: *)
+(*GenerateKinematics*)
+
+
+Options[GenerateKinematics]={RationalKinematics->True,ParameterRange->1000,Parametric->False,ParameterName->$par}
+{RationalKinematics->True,ParameterRange->1000,Parametric->False,ParameterName->$par}
+GenerateKinematics[total_Integer,fourD_Integer,OptionsPattern[]]:=Catch[Module[{\[Xi],\[Eta],\[Xi]t,\[Eta]t,n,random,system,sol,par,count,out},
+
+(*First we check that total \[GreaterEqual] fourD+2 *)
+If[total<fourD+2,Throw["Please check input, impossible kinematics has been requested."];
 ];
-AA[i_,j_]:= -\[Xi][i]\[Eta][j]+\[Xi][j]\[Eta][i];
-BB[i_,j_]:= \[Phi][i]\[Chi][j]-\[Phi][j]\[Chi][i];
-AB[i_,j_]:=0;
-BA[i_,j_]:=0;
-AB[i_,j_,k_]:=ls[i].(P[j][[1]]IdentityMatrix[2]-Sum[P[j][[m]]PauliMatrix[m-1],{m,2,4}]).sl[k];
-BA[i_,j_,k_]:=rs[i].(P[j][[1]]IdentityMatrix[2]-Sum[P[j][[m]]PauliMatrix[m-1],{m,2,4}]).sr[k];
-AA[i_,j_,k_,l_]:=ls[i].(P[j][[1]]IdentityMatrix[2]-Sum[P[j][[m]]PauliMatrix[m-1],{m,2,4}]).(P[k][[1]]IdentityMatrix[2]-Sum[P[k][[m]]PauliMatrix[m-1],{m,2,4}]).sr[l];
-BB[i_,j_,k_,l_]:=rs[i].(P[j][[1]]IdentityMatrix[2]-Sum[P[j][[m]]PauliMatrix[m-1],{m,2,4}]).(P[k][[1]]IdentityMatrix[2]-Sum[P[k][[m]]PauliMatrix[m-1],{m,2,4}]).sl[l];
-If[n>= 5,
-\[Xi][1]=1;
-\[Xi][2]=0;
-Do[\[Xi][i]=Sum[1/Product[x[k],{k,j}],{j,1,i-2}],{i,3,n}];
-\[Eta][1]=0;
-Do[\[Eta][i]=1,{i,2,n}];
-\[Phi][1]=-1+x[3n-10]/x[n-1];
-\[Phi][2]=-x[1];
-\[Phi][3]=x[1];
-\[Chi][1]=1;
-\[Chi][2]=0;
-\[Chi][3]=x[1]x[n-1];
-\[CapitalPhi]=Table[\[Phi][i],{i,4,n}];(*table delle variabili \[Phi] per Solve*)
-\[CapitalChi]=Table[\[Chi][i],{i,4,n}];(*table delle variabili \[Chi] per Solve*)
-t3=True;
-t4=True;
-If[n>=6,
-t1=Table[x[i]==Sum[(AB[i-n+5,j,2])/(BB[1,2]AA[1,i-n+5]),{j,2,i-n+4}],{i,n,2n-6}];(*prima table dei vincoli*)
-t2=Table[x[i]==Sum[(AA[1,2,j,i-2n+10]+AA[1,3,j,i-2n+10])/(mp2[P[2]+P[3]]AA[1,i-2n+10]),{j,2,i-2n+9}],{i,2n-5,3n-11}];(*seconda table dei vincoli*)
-Do[t3=t3&&t1[[i]],{i,Length[t1]}];(*prima table trasformata in sequenza di conzioni &&...&&...*)
-Do[t4=t4&&t2[[i]],{i,Length[t2]}];(*seconda table trasformata in sequenza di conzioni &&...&&...*)
+
+n=total;
+
+(*Next fix the components of the four-dimensional spinors*)
+Do[
+\[Xi][i+n]=0;
+\[Eta][i+n]=0;
+\[Eta]t[i+n]=\[Eta]t[i]*\[Xi]t[i+n]/\[Xi]t[i];
+,{i,n-fourD+1,n}];
+
+(*Based on the options given assign rational rather than real kinematics and the range of the interval over which to generate it*)
+If[TrueQ[OptionValue[RationalKinematics]],
+random:=RandomInteger[OptionValue[ParameterRange]],
+random:=RandomReal[OptionValue[ParameterRange]];
 ];
-sol=Solve[Sum[\[Xi][i]\[Phi][i],{i,n}]==0&&Sum[\[Xi][i]\[Chi][i],{i,n}]==0&&Sum[\[Eta][i]\[Phi][i],{i,n}]==0&&Sum[\[Eta][i]\[Chi][i],{i,n}]==0&&t3&&t4,{Sequence@@\[CapitalPhi],Sequence@@\[CapitalChi]}];
-Do[\[Phi][i+3]=sol[[1,i,2]],{i,Length[sol[[1]]]/2}];
-Do[\[Chi][i+3-Length[sol[[1]]]/2]=sol[[1,i,2]],{i,Length[sol[[1]]]/2+1,Length[sol[[1]]]}];
+
+(*Next generate the random spinor components. First the 3n*)
+
+Do[
+\[Xi][i+n]=random;
+\[Eta][i+n]=random;
+\[Eta]t[i+n]=random;
+,{i,n-fourD}];
+
+(*Then the 9:*)
+\[Eta]t[1]=random;
+\[Eta]t[2]=random;
+\[Xi]t[1]=random;
+\[Xi]t[2]=random;
+\[Xi][3]=random;
+\[Eta][3]=random;
+\[Xi][4]=random;
+\[Eta][1]=random;
+\[Eta][4]=random;
+
+(*Depending on whether a parametric expression is required or not, we set the other variables to either a parameter or a number*)
+
+If[TrueQ[OptionValue[Parametric]],
+(*Parametric components*)
+par=OptionValue[ParameterName];
+\[Eta]t[3]=par[1];
+\[Eta]t[4]=par[2];
+\[Xi]t[4]=par[3];
+\[Xi]t[3+n]=par[4];
+\[Xi]t[4+n]=par[5];
+count=6;
+Do[
+\[Xi][i]=par[count++];
+\[Eta][i]=par[count++];
+\[Xi]t[i]=par[count++];
+\[Eta]t[i]=par[count++];
+\[Xi]t[i+n]=par[count++];
+,{i,5,n}];
+,
+(*Numeric components*)
+\[Eta]t[3]=random;
+\[Eta]t[4]=random;
+\[Xi]t[4]=random;
+\[Xi]t[3+n]=random;
+\[Xi]t[4+n]=random;
+Do[
+\[Xi][i]=random;
+\[Eta][i]=random;
+\[Xi]t[i]=random;
+\[Eta]t[i]=random;
+\[Xi]t[i+n]=random;
+,{i,5,n}];
 ];
-spinors=Table[{{sr[i],sl[i]},{ls[i],rs[i]}},{i,n}];
-Return[spinors]
-];*)
+
+(*Generate momentum conservation:*)
+system={Sum[\[Xi][i]\[Xi]t[i],{i,2*n}]==0,Sum[\[Xi][i]\[Eta]t[i],{i,2*n}]==0,Sum[\[Eta][i]\[Xi]t[i],{i,2*n}]==0,Sum[\[Eta][i]\[Eta]t[i],{i,2*n}]==0,Sum[\[Xi][i]\[Eta][i+n]-\[Xi][i+n]\[Eta][i],{i,n}]==0,Sum[\[Eta]t[i+n]\[Xi]t[i]-\[Xi]t[i+n]\[Eta]t[i],{i,n}]==0};
+
+(*Solve momentum conservation*)
+sol=Solve[system,{\[Xi][1],\[Xi][2],\[Eta][2],\[Xi]t[3],\[Xi]t[1+n],\[Xi]t[2+n]}];
+
+(*Safety check*)
+If[sol==={},
+Throw["Anomalous kinematic point has been randomly generated, momentum conservation could not be solved."],
+sol=sol//First;
+];
+
+(*Now that all the spinor components have been generated we just need to return them in a suitably packaged output. The oupt will be divided into 6D and 4D and then further into {\[Lambda],\[Lambda]t,\[Lambda]',\[Lambda]t'}. Notice that these spinors will be considered all having upper indices so the spinors will be like \[Lambda]=\[LeftAngleBracket]\[Lambda]| and \[Lambda]t=|\[Lambda]t].*)
+
+(*List of the 6D spinors*)
+out=Table[{{\[Xi][i],\[Eta][i]},{\[Xi]t[i],\[Eta]t[i]},{\[Xi][i+n],\[Eta][i+n]},{\[Xi]t[i+n],\[Eta]t[i+n]}},{i,n-fourD}];
+
+(*Then append the table of the 4D components and replece the solutions to momentum conservation*)
+out={out,Table[{{\[Xi][i],\[Eta][i]},{\[Xi]t[i],\[Eta]t[i]}},{i,n-fourD+1,n}]}/.sol;
+
+Return[out];
+];
+];
+
+
+(* ::Subsubsection::Closed:: *)
+(*GenerateKinematics4D*)
+
+
+Options[GenerateKinematics4D]={RationalKinematics->True,ParameterRange->1000,Parametric->False,ParameterName->$par}
+{RationalKinematics->True,ParameterRange->1000,Parametric->False,ParameterName->$par}
+GenerateKinematics4D[total_Integer,OptionsPattern[]]:=Catch[Module[{\[Xi],\[Eta],\[Xi]t,\[Eta]t,n,random,system,sol,par,count,out},
+
+n=total;
+
+(*Based on the options given assign rational rather than real kinematics and the range of the interval over which to generate it*)
+If[TrueQ[OptionValue[RationalKinematics]],
+random:=RandomInteger[OptionValue[ParameterRange]],
+random:=RandomReal[OptionValue[ParameterRange]];
+];
+
+(*Next generate the random spinor components. First the n*)
+
+Do[
+\[Eta]t[i]=random;
+,{i,n}];
+
+(*Then the 6:*)
+\[Xi][3]=random;
+\[Xi][4]=random;
+\[Eta][3]=random;
+\[Eta][4]=random;
+\[Xi]t[1]=random;
+\[Xi]t[2]=random;
+
+(*Depending on whether a parametric expression is required or not, we set the other variables to either a parameter or a number*)
+
+If[TrueQ[OptionValue[Parametric]],
+(*Parametric components*)
+par=OptionValue[ParameterName];
+\[Xi]t[3]=par[1];
+\[Xi]t[4]=par[2];
+count=3;
+Do[
+\[Xi]t[i]=par[count++];
+\[Xi][i]=par[count++];
+\[Eta][i]=par[count++];
+,{i,5,n}];
+,
+(*Numeric components*)
+\[Xi]t[3]=random;
+\[Xi]t[4]=random;
+Do[
+\[Xi]t[i]=random;
+\[Xi][i]=random;
+\[Eta][i]=random;
+,{i,5,n}];
+];
+
+(*Generate momentum conservation:*)
+system={Sum[\[Xi][i]\[Xi]t[i],{i,n}]==0,Sum[\[Xi][i]\[Eta]t[i],{i,n}]==0,Sum[\[Eta][i]\[Xi]t[i],{i,n}]==0,Sum[\[Eta][i]\[Eta]t[i],{i,n}]==0};
+
+(*Solve momentum conservation*)
+sol=Solve[system,{\[Xi][1],\[Xi][2],\[Eta][1],\[Eta][2]}];
+
+(*Safety check*)
+If[sol==={},
+Throw["Anomalous kinematic point has been randomly generated, momentum conservation could not be solved."],
+sol=sol//First;
+];
+
+(*Now that all the spinor components have been generated we just need to return them in a suitably packaged output. The oupt will be divided into {\[Lambda],\[Lambda]t}. Notice that these spinors will be considered all having upper indices so the spinors will be like \[Lambda]=\[LeftAngleBracket]\[Lambda]| and \[Lambda]t=|\[Lambda]t].*)
+
+(*Table of the 4D components and replece the solutions to momentum conservation*)
+out=Table[{{\[Xi][i],\[Eta][i]},{\[Xi]t[i],\[Eta]t[i]}},{i,n}]/.sol;
+
+Return[out];
+];
+];
+
+
+(* ::Subsubsection:: *)
+(*ClearDependentKinematics*)
+
+
+ClearDependentKinematics[]:=Block[{},
+
+(*Clearing functions with DownValues*)
+ClearDownValues[#]&/@{SpinorAngleBracketN,SpinorSquareBracketN,Mom4DN,Mom6DN,ChainN,mpN6};
+
+(*Clearing functions with SubValues*)
+ClearSubValues[#]&/@{SpinorUndot6DN,SpinorDot6DN,AngSquInvariantN,SquAngInvariantN,AngAngInvariantN,SquSquInvariantN,MomMat4DN,MomMat6DN};
+
+];
 
 
 (* ::Subsection::Closed:: *)
 (*GenSpinors*)
 
 
-Options[GenSpinors]={Dimension->6,DisplaySpinors->False,Parametric->False,ParameterName->$par,ParameterRange->10000,RationalKinematics->True,Seed->False,RandomSpinors->False};
-SetAttributes[$par,Protected];
+Options[GenSpinors]={RationalKinematics->True,ParameterRange->1000,Parametric->False,ParameterName->$par,Seed->False,Dimension->6,DisplaySpinors->False}
+{RationalKinematics->True,ParameterRange->1000,Parametric->False,ParameterName->$par,Seed->False,Dimension->6,DisplaySpinors->False}
+GenSpinors[labels_List,OptionsPattern[]]:=Catch[Module[{lab4,lab6,type,ra,rs,la,ls,\[Xi],\[Xi]t,\[Eta],\[Eta]t,kinem,n,kinem2},
 
-GenSpinors[labels_List,OptionsPattern[]]:=Module[{lambda,lambdaout,num,ra,rs,la,ls,\[Xi],\[Eta],\[Xi]t,\[Eta]t,mass,masst,mur,mul,mutr,mutl,parn,usedpar,system,sol},
+(*First of all, clear all the stored values of non-fundamental building blocks, like angle and square brackets and so on. This is achieved with ClearDownValues and ClearSubValues*)
+ClearDependentKinematics[];
 
-(*First of all we have to clear the definitions of SpinorUndotN and SpinorDotN*)
-(*ClearSubValues[SpinorUndotN];
-ClearSubValues[SpinorDotN];
-ClearSubValues[ExtramassN];
-ClearSubValues[ExtramasstildeN];*)
-
-(*Clear Downvalues which evaluate to numbers of the invariant.*)
-
-(*SubValues[SpinorAngleBracketN]=DeleteCases[SubValues[SpinorAngleBracketN],_?(!FreeQ[Last[#],_?NumberQ]&)];
-SubValues[SpinorSquareBracketN]=DeleteCases[SubValues[SpinorSquareBracketN],_?(!FreeQ[Last[#],_?NumberQ]&)];
-SubValues[AngAngInvariantN]=DeleteCases[SubValues[AngAngInvariantN],_?(!FreeQ[Last[#],_?NumberQ]&)];
-SubValues[SquAngInvariantN]=DeleteCases[SubValues[SquAngInvariantN],_?(!FreeQ[Last[#],_?NumberQ]&)];
-SubValues[AngSquInvariantN]=DeleteCases[SubValues[AngSquInvariantN],_?(!FreeQ[Last[#],_?NumberQ]&)];
-SubValues[SquSquInvariantN]=DeleteCases[SubValues[SquSquInvariantN],_?(!FreeQ[Last[#],_?NumberQ]&)];
-*)
-
-ClearSubValues[SpinorUndot6DN];
-ClearSubValues[SpinorDot6DN];
-ClearSubValues[AngSquInvariantN];
-ClearSubValues[AngAngInvariantN];
-ClearSubValues[SquAngInvariantN];
-ClearSubValues[SquSquInvariantN];
-
-ClearDownValues[SpinorAngleBracketN];
-ClearDownValues[SpinorSquareBracketN];
-
-(*Redefine the six-dimensional numeric staff*)
-RedefineNumerics6D[];
-
-(*Clear the subvalues of the four-dimensional staff*)
-
-Do[SubValues[SpinorUndotN]=DeleteCases[SubValues[SpinorUndotN],_?(!FreeQ[First[#],With[{j=i},HoldPattern[SpinorUndotN[j]]]]&)],{i,labels}];
-Do[SubValues[SpinorDotN]=DeleteCases[SubValues[SpinorDotN],_?(!FreeQ[First[#],With[{j=i},HoldPattern[SpinorDotN[j]]]]&)],{i,labels}];
-Do[SubValues[ExtramassN]=DeleteCases[SubValues[ExtramassN],_?(!FreeQ[First[#],With[{j=i},HoldPattern[ExtramassN[j]]]]&)],{i,labels}];
-Do[SubValues[ExtramasstildeN]=DeleteCases[SubValues[ExtramasstildeN],_?(!FreeQ[First[#],With[{j=i},HoldPattern[ExtramasstildeN[j]]]]&)],{i,labels}];
-
-num=Length[labels];
-
-(*Generate a parametrizatiuon for the four-dimensional \[Lambda]*)
-
-(*Definition of the spinors in terms of the components. In the six-dimensionla case there will be 2n of tese spinors, where the first n refer to \[Lambda] and the secodn n to \[Lambda]' which is redefinition of the \[Mu] encoding also the masses, see paper to be written.*)
-ra[i_]:={\[Xi][i],\[Eta][i]}(*|i>*);
-	rs[i_]:={\[Xi]t[i],\[Eta]t[i]}(*|i]*);
-	la[i_]:={\[Eta][i],-\[Xi][i]}(*<i|*);
-	ls[i_]:={-\[Eta]t[i],\[Xi]t[i]}(*[i|*);
-(*Four dimensions*)
-If[TrueQ[OptionValue[Dimension]==4],
-(*Fix n+6 components to aribitrary numbers distinguishing between rational and real kinematics*)
-If[OptionValue[RationalKinematics],
-Do[\[Xi][i]=RandomInteger[OptionValue[ParameterRange]],{i,num}];
-Do[\[Xi]t[i]=RandomInteger[OptionValue[ParameterRange]];
-	\[Eta]t[i]=RandomInteger[OptionValue[ParameterRange]];
-	\[Eta][i+2]=RandomInteger[OptionValue[ParameterRange]],{i,2}],
-Do[\[Xi][i]=RandomReal[OptionValue[ParameterRange]],{i,num}];
-Do[\[Xi]t[i]=RandomReal[OptionValue[ParameterRange]];
-	\[Eta]t[i]=RandomReal[OptionValue[ParameterRange]];
-	\[Eta][i+2]=RandomReal[OptionValue[ParameterRange]],{i,2}];
+(*If labels is a list of two lists, then the first one is to be treated as the list of 6D momenta and the second one as the list of 4D momenta. If the option Dimension is set to 4 then all the momenta are considered 4 dimensional. The variable type is flag for the 3 different cases*)
+Which[
+OptionValue[Dimension]===4,
+lab4=labels;
+lab6={};
+(*Pure 4D*)
+type=0;
+,
+MatchQ[labels,{_List,_List}],
+lab6=labels[[1]];
+lab4=labels[[2]];
+(*Mixed kinematics*)
+type=1;
+(*If the list of 6D momenta is epty, this is equivalent to case 1*)
+If[lab6==={},type=0;];
+,
+True,
+lab6=labels;
+lab4={};
+(*Pure 6D*)
+type=2;
 ];
 
-(*We check if we want numeric values or parametric values*)
-If[!TrueQ[OptionValue[Parametric]],
-(*Generate numerical values for all the remaining components except 4, which will solve momentum conservation*)
-If[OptionValue[RationalKinematics],
-Do[\[Eta][i]=RandomInteger[OptionValue[ParameterRange]],{i,5,num}];
-Do[\[Xi]t[i]=RandomInteger[OptionValue[ParameterRange]];
-	\[Eta]t[i]=RandomInteger[OptionValue[ParameterRange]],{i,4,num}],
-Do[\[Eta][i]=RandomReal[OptionValue[ParameterRange]],{i,5,num}];
-Do[\[Xi]t[i]=RandomReal[OptionValue[ParameterRange]];
-	\[Eta]t[i]=RandomReal[OptionValue[ParameterRange]],{i,4,num}];
-],
-(*Assign a parameter name to the remaining components*)
-parn=OptionValue[ParameterName];
-Do[\[Xi]t[i]=parn[i-3],{i,4,num}];
-usedpar=num-3;
-Do[\[Eta]t[i]=parn[i+usedpar-3],{i,4,num}];
-usedpar=usedpar+(num-3);
-Do[\[Eta][i]=parn[i+usedpar-4],{i,5,num}];
+(*Check if all the 4D momenta have been declared as 4D, else print a warning message but proceed*)
+If[AnyTrue[lab4,(!MemberQ[Momenta4D,#]&)],
+Print["Warning: some of the four-dimensional momenta have not been declared as four-dimensional through KillMasses. Use of the generated kinematics in combination with analytic calculations might result in errors."];
 ];
 
-(*Solve momentum conservation in other 4 components, or set to arbitrary numbers if RandomSpinors is set to true*)
-If[TrueQ[OptionValue[RandomSpinors]],
-{\[Eta][1],\[Eta][2],\[Xi]t[3],\[Eta]t[3]}=Table[RandomInteger[OptionValue[ParameterRange]],{i,4}],
-sol=Solve[Sum[\[Xi][i]\[Xi]t[i],{i,num}]==0&&Sum[\[Xi][i]\[Eta]t[i],{i,num}]==0&&Sum[\[Eta][i]\[Xi]t[i],{i,num}]==0&&Sum[\[Eta][i]\[Eta]t[i],{i,num}]==0,{\[Eta][1],\[Eta][2],\[Xi]t[3],\[Eta]t[3]}];
-{\[Eta][1],\[Eta][2],\[Xi]t[3],\[Eta]t[3]}={\[Eta][1],\[Eta][2],\[Xi]t[3],\[Eta]t[3]}/.First[sol];
-];
-(*Relate generated kinematics to the spiors:*)
-Do[
-(*\[Lambda] spinors*)
-SpinorUndotN[labels[[i]]][$lam][$up]=la[i];
-SpinorUndotN[labels[[i]]][$lam][$down]=ra[i];
-SpinorDotN[labels[[i]]][$lam][$down]=ls[i];
-SpinorDotN[labels[[i]]][$lam][$up]=rs[i];
-,{i,num}];
-
-(*Print the computed spinors if required*)
-
-If[TrueQ[OptionValue[DisplaySpinors]],
-Print["Output reads: {|\[Lambda]>,|\[Lambda]]}"];
-Return[Table[{ra[i],rs[i]},{i,num}]],
-Return[Null];
-];
-
-];
-
-(*If we want six-dimensional objects we have to generate also the \[Mu] and the masses. We will do this starting from scratch, which should be much easier than recycle momentum twistor variables*)
-
-(*Fix the seed of the random generator if required using the Seed option*)
-If[TrueQ[Head[OptionValue[Seed]]==Integer],
+(*If Seed has been defined then SeedRandom*)
+If[MatchQ[Head[OptionValue[Seed]],Integer|String],
 SeedRandom[OptionValue[Seed]];
 ];
-(*Fix 3n+9 arbitrary components differentiating beetween rational kinematics and other*)
-If[OptionValue[RationalKinematics],
-(*3n*)
-Do[
-\[Xi][i]=RandomInteger[OptionValue[ParameterRange]];
-\[Eta][i]=RandomInteger[OptionValue[ParameterRange]];
-\[Xi]t[i+num]=RandomInteger[OptionValue[ParameterRange]],
-{i,num}];
-(*The other 9 arbitrary ones*)
-\[Eta]t[1+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Eta]t[2+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Eta]t[3+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Eta]t[4+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Xi][1+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Xi][2+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Xi][3+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Xi][4+num]=RandomInteger[OptionValue[ParameterRange]];
-\[Xi]t[1]=RandomInteger[OptionValue[ParameterRange]];
+
+(*Definition of the spinors in terms of the components. In the six-dimensional case there will be 2n of these spinors, where the first n refer to \[Lambda] and the second n to \[Lambda]' which is redefinition of the \[Mu] encoding also the masses, see package documentation.*)
+	ra[i_]:={-\[Xi][i],\[Eta][i]}(*|i>*);
+		   rs[i_]:={\[Xi]t[i],\[Eta]t[i]}(*|i]*);
+		   la[i_]:={\[Eta][i],\[Xi][i]}(*<i|*);
+		   ls[i_]:={-\[Eta]t[i],\[Xi]t[i]}(*[i|*);
+
+(*Now actually generate the kinematics*)
+Which[
+type===0,
+(*Pure 4D*)
+n=Length[lab4];
+kinem=Table[{la[i],rs[i]},{i,n}];
+kinem2=GenerateKinematics4D[n,{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName]}];
+If[Head[kinem2]===String,Throw[kinem2]];
+Evaluate[kinem]=kinem2;
 ,
-(*3n*)
-Do[\[Xi][i]=RandomReal[OptionValue[ParameterRange]];
-\[Eta][i]=RandomReal[OptionValue[ParameterRange]];
-\[Xi]t[i+num]=RandomReal[OptionValue[ParameterRange]],
-{i,num}];
-(*The other 9 arbitrary ones*)
-\[Eta]t[1+num]=RandomReal[OptionValue[ParameterRange]];
-\[Eta]t[2+num]=RandomReal[OptionValue[ParameterRange]];
-\[Eta]t[3+num]=RandomReal[OptionValue[ParameterRange]];
-\[Eta]t[4+num]=RandomReal[OptionValue[ParameterRange]];
-\[Xi][1+num]=RandomReal[OptionValue[ParameterRange]];
-\[Xi][2+num]=RandomReal[OptionValue[ParameterRange]];
-\[Xi][3+num]=RandomReal[OptionValue[ParameterRange]];
-\[Xi][4+num]=RandomReal[OptionValue[ParameterRange]];
-\[Xi]t[1]=RandomReal[OptionValue[ParameterRange]];
+type===1,
+(*Mixed*)
+n=Length[lab4]+Length[lab6];
+kinem={Table[{la[i],rs[i],la[i+n],rs[i+n]},{i,Length[lab6]}],Table[{la[i],rs[i]},{i,Length[lab6]+1,n}]};
+kinem2=GenerateKinematics[n,Length[lab4],{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName]}];
+If[Head[kinem2]===String,Throw[kinem2]];
+Evaluate[kinem]=kinem2;
+,
+type===2,
+(*Pure 6D*)
+n=Length[lab6];
+kinem={Table[{la[i],rs[i],la[i+n],rs[i+n]},{i,n}],{}};
+kinem2=GenerateKinematics[n,0,{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName]}];
+If[Head[kinem2]===String,Throw[kinem2]];
+Evaluate[kinem]=kinem2;
 ];
 
-(*Now we have to set the free-parameters to either be equal to the chosen variable name or generate numeric values for them, depending on the OptionValue of Parametric*)
-If[TrueQ[OptionValue[Parametric]],
-(*Parametric expression*)
-(*In order to write less lets introduce this local variable*)
-parn=OptionValue[ParameterName];
-Do[\[Xi]t[i]=parn[i-4],{i,5,num}];
-debugPrint[Table[\[Xi]t[i]=parn[i-4],{i,5,num}]];
-usedpar=num-4;
-Do[\[Eta]t[i]=parn[i-1+usedpar],{i,2,num}];
-debugPrint[Table[\[Eta]t[i]=parn[i-1+usedpar],{i,2,num}]];
-usedpar=usedpar+num-1;
-Do[\[Xi][i+num]=parn[i-4+usedpar],{i,5,num}];
-debugPrint[Table[\[Xi][i+num]=parn[i-4+usedpar],{i,5,num}]];
-usedpar=usedpar+num-4;
-Do[\[Eta][i+num]=parn[i-2+usedpar],{i,3,num}];
-debugPrint[Table[\[Eta][i+num]=parn[i-2+usedpar],{i,3,num}]];
-usedpar=usedpar+num-2;
-Do[\[Eta]t[i+num]=parn[i-4+usedpar],{i,5,num}];
-debugPrint[Table[\[Eta]t[i+num]=parn[i-4+usedpar],{i,5,num}]];
-usedpar=usedpar+num-4;
-debugPrint[usedpar==(5*num-15)],
-(*Numerical values*)
-If[TrueQ[OptionValue[RationalKinematics]],
-(*In the case rational kinematics is required*)
-Do[\[Xi]t[i]=RandomInteger[OptionValue[ParameterRange]],{i,5,num}];
-Do[\[Eta]t[i]=RandomInteger[OptionValue[ParameterRange]],{i,2,num}];
-Do[\[Xi][i+num]=RandomInteger[OptionValue[ParameterRange]],{i,5,num}];
-Do[\[Eta][i+num]=RandomInteger[OptionValue[ParameterRange]],{i,3,num}];
-Do[\[Eta]t[i+num]=RandomInteger[OptionValue[ParameterRange]],{i,5,num}],
-(*Real kinematics*)
-Do[\[Xi]t[i]=RandomReal[OptionValue[ParameterRange]],{i,5,num}];
-Do[\[Eta]t[i]=RandomReal[OptionValue[ParameterRange]],{i,2,num}];
-Do[\[Xi][i+num]=RandomReal[OptionValue[ParameterRange]],{i,5,num}];
-Do[\[Eta][i+num]=RandomReal[OptionValue[ParameterRange]],{i,3,num}];
-Do[\[Eta]t[i+num]=RandomReal[OptionValue[ParameterRange]],{i,5,num}]
-];
-];
-
-(*Now the last 6 variables fixed by momentum conservation. If RandomSpinors is set to True momentum conservation is not imposed and the last variables are fixed randomly.*)
-
-If[TrueQ[OptionValue[RandomSpinors]],
-{\[Xi]t[2],\[Xi]t[3],\[Xi]t[4],\[Eta][1+num],\[Eta][2+num],\[Eta]t[1]}=Table[RandomInteger[OptionValue[ParameterRange]],{i,6}],
-system={Sum[\[Xi][i]\[Xi]t[i]+\[Xi][i+num]\[Xi]t[i+num],{i,num}]==0,Sum[\[Xi][i]\[Eta]t[i]+\[Xi][i+num]\[Eta]t[i+num],{i,num}]==0,Sum[\[Eta][i]\[Xi]t[i]+\[Eta][i+num]\[Xi]t[i+num],{i,num}]==0,Sum[\[Eta][i]\[Eta]t[i]+\[Eta][i+num]\[Eta]t[i+num],{i,num}]==0,
-Sum[\[Xi][i]\[Eta][i+num]-\[Xi][i+num]\[Eta][i],{i,num}]==0,Sum[\[Xi]t[i]\[Eta]t[i+num]-\[Xi]t[i+num]\[Eta]t[i],{i,num}]==0};
-sol=Solve[system,{\[Xi]t[2],\[Xi]t[3],\[Xi]t[4],\[Eta][1+num],\[Eta][2+num],\[Eta]t[1]}]//Flatten;
-{\[Xi]t[2],\[Xi]t[3],\[Xi]t[4],\[Eta][1+num],\[Eta][2+num],\[Eta]t[1]}={\[Xi]t[2],\[Xi]t[3],\[Xi]t[4],\[Eta][1+num],\[Eta][2+num],\[Eta]t[1]}/.sol;
-];
-
-
-(*Now we have to write the masses and the \[Mu] in terms of these variables. For the relations among these see the paper to come...*)
-
-
-(*We choose the \[Mu] to be equal to \[Lambda]' which is an allowed choice, so nothing has to be done there.*)
-
-(*Now we just need to set the global variables equal to te locally generated ones:*)
-
+(*Finally relate the generated kinematics to the spinor labels:*)
+(*6D part*)
 Do[
-(*\[Lambda] spinors*)
-SpinorUndotN[labels[[i]]][$lam][$up]=la[i];
-SpinorUndotN[labels[[i]]][$lam][$down]=ra[i];
-SpinorDotN[labels[[i]]][$lam][$down]=ls[i];
-SpinorDotN[labels[[i]]][$lam][$up]=rs[i];
-(*\[Mu] spinors*)
-SpinorUndotN[labels[[i]]][$mu][$up]=la[i+num];
-SpinorUndotN[labels[[i]]][$mu][$down]=ra[i+num];
-SpinorDotN[labels[[i]]][$mu][$down]=ls[i+num];
-SpinorDotN[labels[[i]]][$mu][$up]=rs[i+num];
-(*Masses:*)
-ExtramassN[labels[[i]]]=la[i].ra[i+num];
-ExtramasstildeN[labels[[i]]]=ls[i+num].rs[i];
-,{i,num}];
+		(*\[Lambda] spinors*)
+		SpinorUndotN[lab6[[i]]][$lam][$up]=la[i];
+		SpinorUndotN[lab6[[i]]][$lam][$down]=ra[i];
+		SpinorDotN[lab6[[i]]][$lam][$down]=ls[i];
+		SpinorDotN[lab6[[i]]][$lam][$up]=rs[i];
+		(*\[Mu] spinors*)
+		SpinorUndotN[lab6[[i]]][$mu][$up]=la[i+n];
+		SpinorUndotN[lab6[[i]]][$mu][$down]=ra[i+n];
+		SpinorDotN[lab6[[i]]][$mu][$down]=ls[i+n];
+		SpinorDotN[lab6[[i]]][$mu][$up]=rs[i+n];
+		(*Masses:*)
+		ExtramassN[lab6[[i]]]=la[i].ra[i+n];
+		ExtramasstildeN[lab6[[i]]]=ls[i+n].rs[i];
+		,{i,Length[lab6]}];
+(*4D part*)
+Do[
+		(*\[Lambda] spinors*)
+		SpinorUndotN[lab4[[i]]][$lam][$up]=la[i+Length[lab6]];
+		SpinorUndotN[lab4[[i]]][$lam][$down]=ra[i+Length[lab6]];
+		SpinorDotN[lab4[[i]]][$lam][$down]=ls[i+Length[lab6]];
+		SpinorDotN[lab4[[i]]][$lam][$up]=rs[i+Length[lab6]];
+(*Initialise the \[Mu] spinors to {Null,Null} for consistency reasons*)SpinorUndotN[lab4[[i]]][$mu][$up]={Null,Null};SpinorUndotN[lab4[[i]]][$mu][$down]={Null,Null};SpinorDotN[lab4[[i]]][$mu][$down]={Null,Null};SpinorDotN[lab4[[i]]][$mu][$up]={Null,Null};(*Masses to zero:*)
+ExtramassN[lab4[[i]]]=0;
+ExtramasstildeN[lab4[[i]]]=0;
+		,{i,Length[lab4]}];
 
-(*Print the computed spinors if required*)
-
-If[TrueQ[OptionValue[DisplaySpinors]],
-Print["Output reads: {|\[Lambda]>,|\[Lambda]],|\[Mu]>,|\[Mu]]}"];
-Return[Table[{ra[i],rs[i],ra[i+num],rs[i+num]},{i,num}]],
-Return[Null];
+(*If DisplaySpinors is set to True display the generated kinematics*)
+If[OptionValue[DisplaySpinors],
+Print["Output reads {|\[Lambda]\[RightAngleBracket],|\[Lambda]],|\[Mu]\[RightAngleBracket],|\[Mu]]} and {|\[Lambda]\[RightAngleBracket],|\[Lambda]]} for 6D and 4D spinors respectively."];
+Return[DeleteCases[{Table[{ra[i],rs[i],ra[i+n],rs[i+n]},{i,Length[lab6]}],Table[{ra[i],rs[i]},{i,Length[lab6]+1,n}]},{}]];
+,
+Return["Numerical kinematics has been generated."];
 ];
 
+
+];
 ];
 
 
@@ -2408,6 +2983,8 @@ ClearSubValues[SquAngInvariantN];
 ClearSubValues[SquSquInvariantN];
 ClearDownValues[SpinorAngleBracketN];
 ClearDownValues[SpinorSquareBracketN];
+
+ClearDependentKinematics[];
 
 (*We now have to redefine the six-dimensional invariants*)
 RedefineNumerics6D[];
@@ -2436,12 +3013,248 @@ SquSquInvariantN[x1_,x2_,x3_,x4_][a_,b_,c_,d_]:=SquSquInvariantN[x1,x2,x3,x4][a,
 );
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*ToNum*)
 
 
-ToNum[exp_]:=exp/.S->S6/.{SpinorAngleBracket->SpinorAngleBracketN,SpinorSquareBracket->SpinorSquareBracketN,Extramass->ExtramassN,Extramasstilde->ExtramasstildeN,AngSquInvariant->AngSquInvariantN,SquAngInvariant->SquAngInvariantN,AngAngInvariant->AngAngInvariantN,SquSquInvariant->SquSquInvariantN,SpinorUndot[mom_][$lam][a_][Null]:>SpinorUndotN[mom][$lam][$up],SpinorUndot[mom_][$lam][Null][a_]:>SpinorUndotN[mom][$lam][$down],SpinorUndot[mom_][$mu][a_][Null]:>SpinorUndotN[mom][$mu][$up],SpinorUndot[mom_][$mu][Null][a_]:>SpinorUndotN[mom][$mu][$down],
+ToNum[exp_]:=exp/.S->S6/.{SpinorAngleBracket->SpinorAngleBracketN,SpinorSquareBracket->SpinorSquareBracketN,Extramass->ExtramassN,Extramasstilde->ExtramasstildeN,AngSquInvariant->AngSquInvariantN,SquAngInvariant->SquAngInvariantN,AngAngInvariant->AngAngInvariantN,SquSquInvariant->SquSquInvariantN,Chain->ChainN,mp->mpN6,SpinorUndot[mom_][$lam][a_][Null]:>SpinorUndotN[mom][$lam][$up],SpinorUndot[mom_][$lam][Null][a_]:>SpinorUndotN[mom][$lam][$down],SpinorUndot[mom_][$mu][a_][Null]:>SpinorUndotN[mom][$mu][$up],SpinorUndot[mom_][$mu][Null][a_]:>SpinorUndotN[mom][$mu][$down],
 SpinorDot[mom_][$lam][a_][Null]:>SpinorDotN[mom][$lam][$up],SpinorDot[mom_][$lam][Null][a_]:>SpinorDotN[mom][$lam][$down],SpinorDot[mom_][$mu][a_][Null]:>SpinorDotN[mom][$mu][$up],SpinorDot[mom_][$mu][Null][a_]:>SpinorDotN[mom][$mu][$down],SpinorUndot6D[mom_][A_][Null][a_]:>SpinorUndot6DN[mom][$down][a],SpinorDot6D[mom_][A_][Null][a_]:>SpinorDot6DN[mom][$down][a]};
+
+
+(* ::Subsection:: *)
+(*MomMat4D*)
+
+
+MomMat4DN[label_][$up]:=MomMat4DN[label][$up]=InverseDot[SpinorDotN[label][$lam][$up],SpinorUndotN[label][$lam][$up]]-(ExtramassN[label]ExtramasstildeN[label])/(SpinorDotN[label][$lam][$down].SpinorDotN[label][$mu][$up] SpinorUndotN[label][$lam][$up].SpinorUndotN[label][$mu][$down])*InverseDot[SpinorDotN[label][$mu][$up],SpinorUndotN[label][$mu][$up]];
+MomMat4DN[label_][$down]:=MomMat4DN[label][$down]=InverseDot[SpinorUndotN[label][$lam][$down],SpinorDotN[label][$lam][$down]]-(ExtramassN[label]ExtramasstildeN[label])/(SpinorDotN[label][$lam][$down].SpinorDotN[label][$mu][$up] SpinorUndotN[label][$lam][$up].SpinorUndotN[label][$mu][$down])*InverseDot[SpinorUndotN[label][$mu][$down],SpinorDotN[label][$mu][$down]];
+
+
+(* ::Subsection:: *)
+(*Mom4DN*)
+
+
+Mom4DN[label_]:=Mom4DN[label]=1/2*{Tr[MomMat4DN[label][$up].PauliMatrix[0]],Tr[MomMat4DN[label][$up].PauliMatrix[1]],Tr[MomMat4DN[label][$up].PauliMatrix[2]],Tr[MomMat4DN[label][$up].PauliMatrix[3]]};
+
+
+(* ::Subsection:: *)
+(*MomMat6D*)
+
+
+MomMat6DN[label_][$up]:=MomMat6DN[label][$up]=-InverseDot[SpinorUndot6DN[label][$down][1],SpinorUndot6DN[label][$down][2]]+InverseDot[SpinorUndot6DN[label][$down][2],SpinorUndot6DN[label][$down][1]];
+MomMat6DN[label_][$down]:=MomMat6DN[label][$down]=InverseDot[SpinorDot6DN[label][$down][1],SpinorDot6DN[label][$down][2]]-InverseDot[SpinorDot6DN[label][$down][2],SpinorDot6DN[label][$down][1]];
+
+
+(* ::Subsection:: *)
+(*Mom6DN*)
+
+
+Mom6DN[label_]:=Mom6DN[label]=1/4{Tr[MomMat6DN[label][$up].PauliSix[0]],Tr[MomMat6DN[label][$up].PauliSix[1]],Tr[MomMat6DN[label][$up].PauliSix[2]],Tr[MomMat6DN[label][$up].PauliSix[3]],Tr[MomMat6DN[label][$up].PauliSix[4]],Tr[MomMat6DN[label][$up].PauliSix[5]]};
+
+
+(* ::Subsection:: *)
+(*PauliSix*)
+
+
+PauliSix[0]={{0,0,0,1},{0,0,-1,0},{0,1,0,0},{-1,0,0,0}}
+{{0,0,0,1},{0,0,-1,0},{0,1,0,0},{-1,0,0,0}};
+PauliSix[1]={{0,0,1,0},{0,0,0,-1},{-1,0,0,0},{0,1,0,0}}
+{{0,0,1,0},{0,0,0,-1},{-1,0,0,0},{0,1,0,0}};
+PauliSix[2]={{0,0,I,0},{0,0,0,I},{-I,0,0,0},{0,-I,0,0}}
+{{0,0,I,0},{0,0,0,I},{-I,0,0,0},{0,-I,0,0}};
+PauliSix[3]={{0,0,0,-1},{0,0,-1,0},{0,1,0,0},{1,0,0,0}}
+{{0,0,0,-1},{0,0,-1,0},{0,1,0,0},{1,0,0,0}};
+PauliSix[4]={{0,I,0,0},{-I,0,0,0},{0,0,0,-I},{0,0,I,0}}
+{{0,I,0,0},{-I,0,0,0},{0,0,0,-I},{0,0,I,0}};
+PauliSix[5]={{0,1,0,0},{-1,0,0,0},{0,0,0,1},{0,0,-1,0}}
+{{0,1,0,0},{-1,0,0,0},{0,0,0,1},{0,0,-1,0}};
+
+
+(* ::Subsection::Closed:: *)
+(*MomToSpinors auxiliary functions*)
+
+
+scalarprod[x_List,y_List]:=x[[1]]*y[[1]]-Sum[x[[i]]*y[[i]],{i,2,Length[x]}];
+scalarprod[x_]:=scalarprod[x,x];
+
+
+MomToSpinors4DMasslessN[mom_List,label_:True,type_:$lam,precise_:True]:=Module[{lamup,lamdown,lamdotup,lamdotdown,p0,p1,p2,p3,fun},
+{p0,p1,p2,p3}=mom;
+lamdown={-(p1-I*p2)/Sqrt[p0+p3],Sqrt[p0+p3]};(*|\[Lambda]>*)
+lamup={Sqrt[p0+p3],(p1-I*p2)/Sqrt[p0+p3]};(*<\[Lambda]|*)
+lamdotdown={-(p1+I*p2)/Sqrt[p0+p3],Sqrt[p0+p3]};(*[\[Lambda]|*)
+lamdotup={Sqrt[p0+p3],(p1+I*p2)/Sqrt[p0+p3]};(*|\[Lambda]]*)
+
+(*Apply //N if required*)
+If[TrueQ[precise],
+fun[x_]:=x,
+fun=N;
+];
+
+
+(*If a label is given we assign these spinor values to the corresponding spinors.*)
+If[TrueQ[label],
+(*If the optional argument label is not given then we just return the generated spinors*)
+Return[{lamdown,lamdotup,lamup,lamdotdown}];(*{|\[Lambda]>,|\[Lambda]],<\[Lambda]|,[\[Lambda]|}*),
+SpinorUndotN[label][type][$down]=lamdown//fun;
+SpinorUndotN[label][type][$up]=lamup//fun;
+SpinorDotN[label][type][$down]=lamdotdown//fun;
+SpinorDotN[label][type][$up]=lamdotup//fun;
+
+(*If we are setting the $lam spinors then initialise the \[Mu] spinors to {Null,Null} for consistency and set masses to zero*)
+If[type===$lam,
+SpinorUndotN[label][$mu][$down]={Null,Null};
+SpinorUndotN[label][$mu][$up]={Null,Null};
+SpinorDotN[label][$mu][$down]={Null,Null};
+SpinorDotN[label][$mu][$up]={Null,Null};
+ExtramassN[label]=0;
+ExtramasstildeN[label]=0;
+];
+
+(*Return the generated 4D spinors*)
+Return[{lamdown,lamdotup,lamup,lamdotdown}];(*{|\[Lambda]>,|\[Lambda]],<\[Lambda]|,[\[Lambda]|}*)
+];
+
+];
+
+
+MomToSpinors4DMassiveN[pr_List,label_:True,precise_:True]:=Module[{sys,q0,q1,q2,q3,k0,k1,k2,k3,sol,qvec,kvec,mass,masstil,fun,solve},
+k1=RandomInteger[100];
+k2=RandomInteger[100];
+k3=RandomInteger[100];
+k0=Sqrt[k1^2+k2^2+k3^2];
+
+(*Apply //N if required*)
+If[TrueQ[precise],
+fun[x_]:=x;
+solve=Solve,
+fun=N;
+solve=NSolve;
+];
+
+sys=({q0,q1,q2,q3}==pr-scalarprod[pr]/(2*scalarprod[{q0,q1,q2,q3},{k0,k1,k2,k3}])*{k0,k1,k2,k3});
+sol=solve[sys,{q0,q1,q2,q3}]//First;
+
+(*Now generate the spinors associated to the massless momenta and store them if required*)
+qvec=MomToSpinors4DMasslessN[{q0,q1,q2,q3}/.sol,label,$lam,precise];
+kvec=MomToSpinors4DMasslessN[{k0,k1,k2,k3},label,$mu,precise];
+mass=Sqrt[scalarprod[pr]];
+masstil=Sqrt[scalarprod[pr]];
+(*And now assign the values to the masses if label is given*)
+If[!TrueQ[label],
+ExtramassN[label]=mass//fun;
+ExtramasstildeN[label]=masstil//fun;
+];
+
+Return[{qvec,kvec,mass,masstil}];
+
+];
+
+
+MomToSpinors6DN::massive="Warning: the given momentum is not massless."
+"Warning: the given momentum is not massless."
+MomToSpinors6DN[{q0_,q1_,q2_,q3_,q4_,q5_},label_:True,precise_:True]:=Catch[Module[{x,y,z,k,xt,yt,zt,kt,P1p,P1m,P2p,P2m,P3p,P3m,lamup,lamdown,lamdotdown,lamdotup,muup,mudown,mudotup,mudotdown,mass,masstil,reps,fun,p0,p1,p2,p3,p4,p5},
+(*Firts we convert the upper index momentum given as input to lower index, because the parametrization is constructed in terms of the latter*)
+{p0,p1,p2,p3,p4,p5}={q0,-q1,-q2,-q3,-q4,-q5};
+
+(*(*First check if the given momentum is massles, if not print error message*)
+If[!((p0^2-p1^2-p2^2-p3^2-p4^2-p5^2)//N//Chop)===0,
+(*Throw["The given momentum is not massless, spinor generation aborted."];*)
+Message[MomToSpinors6DN::massive];
+];*)
+If[!(scalarprod[{p0,p1,p2,p3,p4,p5}]//N//Chop)===0,
+(*Throw["The given momentum is not massless, spinor generation aborted."];*)
+Message[MomToSpinors6DN::massive];
+];
+
+(*Define the objects:*)
+P1p=p0+p3;
+P1m=p0-p3;
+P2p=p1+I*p2;
+P2m=p1-I*p2;
+P3p=p5+I*p4;
+P3m=p5-I*p4;
+
+lamdown={x,y};
+lamdotup={xt,yt};
+mudown={z,k};
+mudotup={zt,kt};
+lamup={y,-x};
+muup={k,-z};
+lamdotdown={-yt,xt};
+mudotdown={-kt,zt};
+
+mass=lamup.mudown;
+masstil=mudotdown.lamdotup;
+
+(*Apply //N if required*)
+If[TrueQ[precise],
+fun[x_]:=x,
+fun=N;
+];
+
+(*Assign values of the parameters previously computed.*)
+reps={x->-P3m,y->0,xt->-(P2m/P3m),yt->P1p/P3m,zt->P1m,z->0,kt->-P2p,k->1};
+(*Recall that in this parametrization we already used little-group invariance to fix the three arbitrary parameters to nice values.*)
+
+{x,y,z,k,xt,yt,zt,kt}={x,y,z,k,xt,yt,zt,kt}/.reps;
+
+If[TrueQ[label],
+Return[{{lamdown,lamdotup},{mudown,mudotup},mass,masstil}],
+(*If a label is given set the spinors to the generated values*)
+SpinorUndotN[label][$lam][$up]=lamup//fun;
+SpinorUndotN[label][$lam][$down]=lamdown//fun;
+SpinorUndotN[label][$mu][$up]=muup//fun;
+SpinorUndotN[label][$mu][$down]=mudown//fun;
+SpinorDotN[label][$lam][$up]=lamdotup//fun;
+SpinorDotN[label][$lam][$down]=lamdotdown//fun;
+SpinorDotN[label][$mu][$up]=mudotup//fun;
+SpinorDotN[label][$mu][$down]=mudotdown//fun;
+ExtramassN[label]=mass//fun;
+ExtramasstildeN[label]=masstil//fun;
+Return[{{lamdown,lamdotup},{mudown,mudotup},mass,masstil}];
+];
+
+];
+];
+
+
+(* ::Subsection:: *)
+(*MomToSpinors*)
+
+
+MomToSpinors[Momentum_List,label_:True,precise_:True]:=Catch[Module[{p0,p1,p2,p3,p4,p5,len,out,mass,momentum},
+(*If the momentum is of the form (p0,p1,p2,p3,0,0) then it is actually 4d and needs to be traeted as such*)
+If[MatchQ[Momentum//Chop,{_,_,_,_,0,0}],
+momentum=Momentum[[;;4]],
+momentum=Momentum;
+];
+
+ClearDependentKinematics[];
+
+len=Length[momentum];
+Which[len===4,
+{p0,p1,p2,p3}=momentum;
+mass=(p0^2-p1^2-p2^2-p3^2)//Chop;
+Which[mass===0,
+(*4D massless*)
+out=MomToSpinors4DMasslessN[momentum,label,$lam,precise],
+mass>0,
+(*4D massive*)
+out=MomToSpinors4DMassiveN[momentum,label,precise],
+True,
+Throw["The given four-dimensional momentum has negative mass. Generation of spinors has been aborted."];
+];
+,
+len===6,
+(*6D massless*)
+out=MomToSpinors6DN[momentum,label,precise];
+,
+True,
+Throw["Unknown form of the momentum, acceptable expressions are: four-dimensional massless, four-dimensional massive and six-dimensional massless. Please check input."];
+];
+Return[out];
+];
+];
 
 
 (* ::Subsection::Closed:: *)
@@ -2463,7 +3276,7 @@ AppendTo[reps,Join[Table[{subcycle[[i]]->subcycle[[i+1]],ToExpression["r"<>ToStr
 ,{subcycle,localcycle}];
 reps=reps//Flatten;
 (*Apply replacements to the functions in the package.*)
-localexp=exp/.{MomPure[x_]:>(MomPure[x]/.reps),PolarPure[x__]:>(PolarPure[x]/.reps),S[x__]:>(S[x]/.reps),S4[x__]:>(S4[x]/.reps),Mom[x_]:>(Mom[x]/.reps),Polar[x__]:>(Polar[x]/.reps),SpinorAngleBracket[x__]:>(SpinorAngleBracket[x]/.reps),SpinorSquareBracket[x__]:>(SpinorSquareBracket[x]/.reps),AngSquInvariant[x_]:>(AngSquInvariant[x]/.reps),SquAngInvariant[x__]:>(SquAngInvariant[x]/.reps),AngAngInvariant[x__]:>(AngAngInvariant[x]/.reps),SquSquInvariant[x__]:>(SquSquInvariant[x]/.reps),SpinorUndot[x__]:>(SpinorUndot[x]/.reps),SpinorDot[x__]:>(SpinorDot[x]/.reps),SpinorUndot6D[x__]:>(SpinorUndot6D[x]/.reps),SpinorDot6D[x__]:>(SpinorDot6D[x]/.reps),SpinorDotPure[x__]:>(SpinorDotPure[x]/.reps),SpinorUndotPure[x__]:>(SpinorUndotPure[x]/.reps)};
+localexp=exp/.{MomPure[x_]:>(MomPure[x]/.reps),PolarPure[x__]:>(PolarPure[x]/.reps),S[x__]:>(S[x]/.reps),S4[x__]:>(S4[x]/.reps),Mom[x_][y_][z_]:>(Mom[x][y][z]/.reps),Polar[x__][y_][z_]:>(Polar[x][y][z]/.reps),Eta[x__]:>(Eta[x]/.reps),SpinorAngleBracket[x__]:>(SpinorAngleBracket[x]/.reps),SpinorSquareBracket[x__]:>(SpinorSquareBracket[x]/.reps),AngSquInvariant[x_]:>(AngSquInvariant[x]/.reps),SquAngInvariant[x__]:>(SquAngInvariant[x]/.reps),AngAngInvariant[x__]:>(AngAngInvariant[x]/.reps),SquSquInvariant[x__]:>(SquSquInvariant[x]/.reps),SpinorUndot[x__]:>(SpinorUndot[x]/.reps),SpinorDot[x__]:>(SpinorDot[x]/.reps),SpinorUndot6D[x__]:>(SpinorUndot6D[x]/.reps),SpinorDot6D[x__]:>(SpinorDot6D[x]/.reps),SpinorDotPure[x__]:>(SpinorDotPure[x]/.reps),SpinorUndotPure[x__]:>(SpinorUndotPure[x]/.reps)};
 Return[localexp];
 ];
 
@@ -2555,6 +3368,83 @@ Return[locexp];
 ];
 
 
+(* ::Subsection::Closed:: *)
+(*HelicityWeight*)
+
+
+HelicityWeight[exp_]:=Module[{locexp,pow,weight},
+
+(*Replace every function with itself times a weight function*)
+locexp=exp/.{SpinorAngleBracket[x_,y_]:>1/(pow[x]pow[y])SpinorAngleBracket[x,y],SpinorSquareBracket[x_,y_]:>pow[x]pow[y]SpinorSquareBracket[x,y],Chain[$angle,x_,{k__},y_,$angle]:>1/pow[x]*1/pow[y]*Chain[$angle,x,{k},y,$angle],Chain[$square,x_,{k__},y_,$square]:>pow[x]pow[y]Chain[$square,x,{k},y,$square],Chain[$angle,x_,{k__},y_,$square]:>1/pow[x]*pow[y]Chain[$angle,x,{k},y,$square],Chain[$square,x_,{k__},y_,$angle]:>pow[x]1/pow[y]Chain[$square,x,{k},y,$angle]};
+
+(*Collect the weights, taking into account the weight 0 possibility which is special*)
+locexp=Expand[locexp,pow];
+If[FreeQ[locexp,pow],
+locexp=weight[locexp,"weight 0 in all spinors"],
+locexp=locexp/.{Power[pow[x_],n_]:>pow[{x,n}]};
+locexp=locexp//.{pow[x_List]*pow[y_List]:>pow[{x,y}]};
+locexp=Collect[locexp,pow[_]];
+locexp=locexp/.{A_*pow[x_List]:>weight[A,x]}//Expand;
+locexp=locexp/.{A_*weight[B_,x_]:>weight[A*B,x]};
+locexp=locexp/.{A_+weight[x__]/;FreeQ[A,weight]:>weight[A,"weight 0 in all spinors"]+weight[x]};
+locexp=locexp/.{weight[A_,x_List]:>weight[A,Partition[Flatten[x],2]]};
+];
+
+If[Head[locexp]===weight,
+locexp={locexp},
+locexp=List@@locexp;
+];
+locexp=locexp/.weight->List;
+If[Length[locexp]==1,
+Return[locexp[[1,2]]],
+Print["The terms have unequal weights, please check input."];
+Return[locexp];
+];
+
+];
+
+
+(* ::Subsection::Closed:: *)
+(*MassDimension*)
+
+
+Options[MassDimension]={SetDimension->{}};
+
+MassDimension[exp_,OptionsPattern[]]:=Catch[Module[{locexp,locrep,pow,invpow,weight},
+
+(*Now replace with pow in exp*)
+locexp=exp/.{SpinorAngleBracket[x__]:>pow*SpinorAngleBracket[x],SpinorSquareBracket[x__]:>pow*SpinorSquareBracket[x],Chain[type1_,x_,{y__},z_,type2_]:>Chain[type1,x,{y},z,type2]*pow^(Length[{y}]+1),S4[x__]:>pow^2*S4[x],S[x__]:>pow^2*S[x],mp[x_,y_]:>pow^2*mp[x,y]};
+
+If[!(locrep=OptionValue[SetDimension])==={},
+(*Check that the dimension has been assigned consistently*)
+If[AllTrue[locrep,(Head[#]===Rule||Head[#]===RuleDelayed)&],
+(*Put SetDimension in a form which we like*)
+locrep=Table[i[[1]]->i[[1]]*pow^i[[2]],{i,locrep}];
+locexp=locexp/.locrep;
+,
+Throw["Dimensions in SetDimension must be given as Rule or RuleDelayed, please check the value assigned to this option."];
+];
+];
+
+(*Collect the weights*)
+locexp=locexp/.{Power[pow,n_?Negative]:>invpow^(-n)};
+locexp=CoefficientRules[locexp,{pow,invpow}];
+locexp=Table[i[[1,1]]-i[[1,2]]->i[[2]],{i,locexp}]//Sort;
+locexp=Gather[locexp,First[#1]==First[#2]&];
+locexp=Table[i[[1,1]]->Sum[i[[j,2]],{j,Length[i]}],{i,locexp}];
+
+If[Length[locexp]==1,
+Return[locexp[[1,1]]],
+Print["Terms with different mass dimension appear in expression. Check your input"];
+locexp=Table[{i[[1]],i[[2]]},{i,locexp}];
+Return[locexp];
+];
+
+
+];
+];
+
+
 (* ::Section:: *)
 (*Symbolic calculus*)
 
@@ -2612,11 +3502,46 @@ MDelta /: MakeBoxes[MDelta[dim_][up_][down_],StandardForm|TraditionalForm]:=MDel
 (*Definion of the default dimension of the delta*)
 $MDimension=4;
 
+(*define dm4 as a shorthand notation for the four-dimensional delta*)
+
 (*Shortcuts*)
 If[frontend==1,
 SetOptions[EvaluationNotebook[],
     InputAliases -> DeleteDuplicates@Append[InputAliases /. Options[EvaluationNotebook[], InputAliases], "md" -> MDeltaBox[$MDimension,"\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]];
     ];
+
+
+(* ::Subsection::Closed:: *)
+(*Delta*)
+
+
+(*Displaying it nicely:*)
+DeltaBox[x_,y_]:=TemplateBox[{x,y},"Delta",
+DisplayFunction->(RowBox[{SubsuperscriptBox["\[Delta]",#2,#1]}]&),
+InterpretationFunction->(RowBox[{"Delta","[",#1,",",#2,"]"}]&)
+];
+
+Delta /: MakeBoxes[Delta[x_,y_],StandardForm|TraditionalForm]:=DeltaBox[ToBoxes[x],ToBoxes[y]];
+
+(*Set default dimension:*)
+Options[Delta]={$DeltaDim->$dim};
+Protect[$dim];
+
+(*Some properties.*)
+(*Contracted with itself:*)
+Delta[up_,down_,OptionsPattern[]]/;TrueQ[up==down]:=OptionValue[$DeltaDim];
+Delta /: Times[Delta[up1_,down1_],Delta[down1_,down2_]]:=Delta[up1,down2];
+Delta /: Times[Delta[up1_,down1_,opt1_],Delta[down1_,down2_,opt1_]]:=Delta[up1,down2,opt1];
+
+(*Contracted with Eta, Mom and Polar:*)
+Delta /: Times[Delta[a_,b_],Eta[b_,c_][$up]]:=Eta[a,c][$up];
+Delta /: Times[Delta[a_,b_],Eta[c_,b_][$up]]:=Eta[a,c][$up];
+Delta /: Times[Delta[a_,b_],Eta[a_,c_][$down]]:=Eta[b,c][$down];
+Delta /: Times[Delta[a_,b_],Eta[c_,a_][$down]]:=Eta[b,c][$down];
+Delta /: Times[Delta[up_,do_],Mom[lab_][do_][Null]]:=Mom[lab][up][Null];
+Delta /: Times[Delta[up_,do_],Mom[lab_][Null][up_]]:=Mom[lab][Null][do];
+Delta /: Times[Delta[up_,do_],Polar[lab_,ref_][do_][Null]]:=Polar[lab,ref][up][Null];
+Delta /: Times[Delta[up_,do_],Polar[lab_,ref_][Null][up_]]:=Polar[lab,ref][Null][do];
 
 
 (* ::Subsection::Closed:: *)
@@ -2692,13 +3617,13 @@ Return[locexp];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Computing F with Lorentz indices*)
 
 
 FstBoxup[mom_,mu_,nu_]:=TemplateBox[{mom,mu,nu},"Fstup",
 DisplayFunction->(RowBox[{SuperscriptBox["F",RowBox[{#2,#3}]],"[",#1,"]"}]&),
-InterpretationFunction->(RowBox[{"Fst","[",#1,"][",#2,",",#3,"]","[","Null",",","Null","]"}]&)
+InterpretationFunction->(RowBox[{"Fst","[",#1,"]","[",#2,",",#3,"]","[","Null",",","Null","]"}]&)
 ];
 FstBoxdown[mom_,mu_,nu_]:=TemplateBox[{mom,mu,nu},"Fstdown",
 DisplayFunction->(RowBox[{SubscriptBox["F",RowBox[{#2,#3}]],"[",#1,"]"}]&),
@@ -2722,7 +3647,7 @@ SetAttributes[Eta,Orderless];
 
 PolarBoxup[mom_,refmom_,mu_]:=TemplateBox[{mom,refmom,mu},"Polarup",
 DisplayFunction->(RowBox[{SuperscriptBox["\[CurlyEpsilon]",#3],"[",#1,",",#2,"]"}]&),
-InterpretationFunction->(RowBox[{"Polar","[",#1,",",#2,"][",#3,"]","[","Null","]"}]&)
+InterpretationFunction->(RowBox[{"Polar","[",#1,",",#2,"]","[",#3,"]","[","Null","]"}]&)
 ];
 PolarBoxdown[mom_,refmom_,mu_]:=TemplateBox[{mom,refmom,mu},"Polardown",
 DisplayFunction->(RowBox[{SubscriptBox["\[CurlyEpsilon]",#3],"[",#1,",",#2,"]"}]&),
@@ -2751,7 +3676,7 @@ InterpretationFunction->(RowBox[{"MomPure","[",#1,"]"}]&)
 
 MomBoxup[mom_,mu_]:=TemplateBox[{mom,mu},"Momup",
 DisplayFunction->(RowBox[{SuperscriptBox[#1,#2]}]&),
-InterpretationFunction->(RowBox[{"Mom","[",#1,"][",#2,"]","[","Null","]"}]&)
+InterpretationFunction->(RowBox[{"Mom","[",#1,"]","[",#2,"]","[","Null","]"}]&)
 ];
 MomBoxdown[mom_,mu_]:=TemplateBox[{mom,mu},"Momdown",
 DisplayFunction->(RowBox[{SubscriptBox[#1,#2]}]&),
@@ -2766,14 +3691,45 @@ InterpretationFunction->(RowBox[{"MomPure","[",#1,"]"}]&)
 Mom /: MakeBoxes[Mom[mom_][mu_][Null],StandardForm|TraditionalForm]:=MomBoxup[ToBoxes[mom],ToBoxes[mu]];
 Mom /: MakeBoxes[Mom[mom_][Null][mu_],StandardForm|TraditionalForm]:=MomBoxdown[ToBoxes[mom],ToBoxes[mu]];
 MomPure /: MakeBoxes[MomPure[mom_],StandardForm|TraditionalForm]:=MomPureBox[ToBoxes[mom]];
+MomPure[MomPure[x_]]:=MomPure[x];
+(*MomPure[x_]/;!FreeQ[x,MomPure]:=x;*)
+MomPure[A_*MomPure[x_]+B_]:=A*MomPure[x]+MomPure[B];
+MomPure[MomPure[x_]+B_]:=MomPure[x]+MomPure[B];
+MomPure[Times[A_,MomPure[x_]]]:=A*MomPure[x];
+Mom[MomPure[x_]]:=Mom[x];
 
 Eta /: Times[Eta[mu_,nu_][$down],f_[lab__][nu_][Null]]:=f[lab][Null][mu];
 Eta /: Times[Eta[mu_,nu_][$up],f_[lab__][Null][nu_]]:=f[lab][mu][Null];
+Eta /: Times[Eta[mu_,nu_][$up],Eta[nu_,ro_][$down]]:=Delta[mu,ro];
 Mom /: Times[Mom[lab1_][mu_][Null],f_[lab2__][Null][mu_]]:=mp[MomPure[lab1],ToExpression[ToString[f]<>"Pure"][lab2]];
 Polar /: Times[Polar[lab1_,lab2_][mu_][Null],f_[lab3__][Null][mu_]]:=mp[PolarPure[lab1,lab2],ToExpression[ToString[f]<>"Pure"][lab3]];
-(*PolarPure /: mp[PolarPure[x_,ref_],PolarPure[y_,ref_]]:=0;*)
 PolarPure /: mp[PolarPure[x_,ref_],MomPure[x_]]:=0;
 PolarPure /: mp[PolarPure[x_,ref_],MomPure[ref_]]:=0;
+PolarPure /: mp[PolarPure[x_,ref_],PolarPure[x_,ref_]]:=0;
+
+
+(* ::Subsection::Closed:: *)
+(*MpToSpinors*)
+
+
+MpToSpinors[exp_,plus_List,minus_List]:=Module[{locexp,rep1,rep2,rep3},
+locexp=exp;
+(*Momenta*)
+rep1={mp[MomPure[x_],MomPure[y_]]/;MemberQ[Momenta4D,x]&&MemberQ[Momenta4D,y]:>1/2*Spinoranglebracket[x,y]Spinorsquarebracket[y,x]};
+(*Momentum with polarization*)
+rep2={mp[MomPure[p_],PolarPure[k_,r_]]/;MemberQ[Momenta4D,p]&&MemberQ[Momenta4D,k]&&MemberQ[plus,k]:>1/Sqrt[2]*(Spinoranglebracket[p,r]Spinorsquarebracket[p,k])/Spinoranglebracket[k,r],mp[MomPure[p_],PolarPure[k_,r_]]/;MemberQ[minus,k]:>-1/Sqrt[2]*(Spinoranglebracket[p,k]Spinorsquarebracket[p,r])/Spinorsquarebracket[k,r]};
+(*Polarizations*)
+rep3={mp[PolarPure[k1_,r1_],PolarPure[k2_,r2_]]/;MemberQ[Momenta4D,k1]&&MemberQ[Momenta4D,k2]&&MemberQ[plus,k1]&&MemberQ[plus,k2]:>(Spinoranglebracket[r1,r2]Spinorsquarebracket[k2,k1])/(Spinoranglebracket[k1,r1]Spinoranglebracket[k2,r2]),mp[PolarPure[k1_,r1_],PolarPure[k2_,r2_]]/;MemberQ[plus,k1]&&MemberQ[minus,k2]:>-(Spinoranglebracket[r1,k2]Spinorsquarebracket[r2,k1])/(Spinoranglebracket[k1,r1]Spinorsquarebracket[k2,r2]),mp[PolarPure[k1_,r1_],PolarPure[k2_,r2_]]/;MemberQ[minus,k1]&&MemberQ[minus,k2]:>(Spinoranglebracket[k1,k2]Spinorsquarebracket[r2,r1])/(Spinorsquarebracket[k1,r1]Spinorsquarebracket[k2,r2])};
+locexp=locexp/.Flatten[{rep1,rep2,rep3}];
+Return[locexp];
+];
+
+
+(* ::Subsection::Closed:: *)
+(*VecToSpinors*)
+
+
+VecToSpinors[exp_,plus_List,minus_List]:=exp/.{Mom[p_][a_][Null]:>1/2*Chain[$angle,p,{a},p,$square],Mom[p_][Null][a_]:>1/2*Chain[$angle,p,{a},p,$square],Polar[k_,r_][a_][Null]/;MemberQ[plus,k]:>1/Sqrt[2]*Chain[$angle,r,{a},k,$square]/Spinoranglebracket[r,k],Polar[k_,r_][a_][Null]/;MemberQ[minus,k]:>1/Sqrt[2]*Chain[$angle,k,{a},r,$square]/Spinorsquarebracket[k,r]};
 
 
 (* ::Subsection::Closed:: *)
@@ -2797,14 +3753,16 @@ Return[out];
 (*ClearSubvalues*)
 
 
-ClearSubValues[f_]:=(SubValues[f]=DeleteCases[SubValues[f],_?(FreeQ[First[#],HoldPattern[f[Pattern]]]&)]);
+(*ClearSubValues[f_]:=(SubValues[f]=DeleteCases[SubValues[f],_?(FreeQ[First[#],HoldPattern[f[Pattern]]]&)]);*)
+
+ClearSubValues[f_]:=(SubValues[f]=DeleteCases[SubValues[f],_?(FreeQ[First[#],Pattern]&)]);
 
 
 (* ::Section:: *)
 (*Shortcuts*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*$Shortcuts*)
 
 
@@ -2837,6 +3795,201 @@ $Shortcuts={RawBoxes[RowBox[{SuperscriptBox["\[Lambda]","\[Alpha]"],"[p]"}]] -> 
 
 
 (* ::Section:: *)
+(*Custom functions*)
+
+
+(* ::Subsection::Closed:: *)
+(*AssignNames*)
+
+
+SetAttributes[AssignFunctions,HoldAllComplete];
+
+AssignFunctions[names__]:=Module[{path,filename,rd,defs,wr,tofile,redundant,myset,mysetdelayed,defsclear},
+
+(*First of all we clear all definitions. To do so we need to apply special treatment for Set and SetDelayed since these do not allow fo a straight pattern matching as Rule and RuleDelayed do*)
+
+tofile=Hold[{names}]/.{Set->myset,SetDelayed->mysetdelayed};
+tofile=tofile/.{Rule[g_[__],_]:>ClearAll[g],RuleDelayed[g_[__],_]:>ClearAll[g],mysetdelayed[g_[__],_]:>ClearAll[g],myset[x_,y_]:>ClearAll[x]};
+tofile=tofile/.{mysetdelayed[x_,y_]:>ClearAll[x],RuleDelayed[x_,y_]:>ClearAll[x],Rule[x_,y_]:>Clear[x]};
+ReleaseHold[tofile];
+
+(*Now we convert everything into a list of replacements which is safe to handle*)
+tofile=Hold[{names}]/.{Set->Rule,SetDelayed->RuleDelayed};
+tofile=tofile//ReleaseHold;
+
+(*Find the package*)
+path=FindFile["SpinorHelicity6D`"];
+(*Extract the position without the package name*)
+path=FileNameTake[path,{1,FileNameDepth[path]-1}];
+(*Define the name of the file containing the definitions*)
+filename=FileNameJoin[{path,"SpinorHelicityCustomFunctions.wl"}];
+
+(*Check if a file that contains definitions already exists. If it does, open it and load its content, which will be a list of replacements*)
+If[FileExistsQ[filename],
+(*Load the content of the file*)
+rd=OpenRead[filename];
+defs=Read[rd];
+Close[filename];
+(*Check if there are any redundant definitions to be replaced. To do so we need also here to clear all the definitions*)
+defsclear=defs/.{Rule[g_[__],_]:>ClearAll[g],RuleDelayed[g_[__],_]:>ClearAll[g]};
+defsclear=defsclear/.{RuleDelayed[x_,y_]:>Clear[x],Rule[x_,y_]:>Clear[x]};
+ReleaseHold[defsclear];
+(*Extract all the function names from tofile*)
+redundant=tofile/.{Rule[g_[__],_]:>g,RuleDelayed[g_[__],_]:>g};
+redundant=redundant/.{RuleDelayed[x_,y_]:>x,Rule[x_,y_]:>x};
+redundant=Flatten[redundant];
+defs=DeleteCases[defs//ReleaseHold,x_/;AnyTrue[redundant,(!FreeQ[x[[1]],#]&)]];
+tofile=Join[defs,tofile//Flatten];
+];
+
+(*Open a stream to write to the file*)
+wr=OpenWrite[filename];
+(*Write to the file*)
+Write[wr,Hold/@tofile];
+(*Close the stream*)
+Close[filename];
+
+(*Convert rules to Set and SetDelayed so that the functions are evaluated and usable*)
+tofile/.{RuleDelayed[x_,y_]/;FreeQ[x,Pattern]:>Set[x,y],RuleDelayed[x_,y_]/;!FreeQ[x,Pattern]:>SetDelayed[x,y],Rule[x_,y_]/;FreeQ[x,Pattern]:>Set[x,y],Rule[x_,y_]/;!FreeQ[x,Pattern]:>SetDelayed[x,y]};
+
+];
+
+
+(*Display all the custom functions*)
+
+AssignFunctions[]:=Module[{path,filename,rd,defs},
+
+(*Find the package*)
+path=FindFile["SpinorHelicity6D`"];
+(*Extract the position without the package name*)
+path=FileNameTake[path,{1,FileNameDepth[path]-1}];
+(*Define the name of the file containing the definitions*)
+filename=FileNameJoin[{path,"SpinorHelicityCustomFunctions.wl"}];
+
+(*Check if a file that contains definitions already exists. If it does, open it and save its content, which will be a list of holded replacements*)
+If[FileExistsQ[filename],
+(*Load the content of the file*)
+rd=OpenRead[filename];
+defs=Read[rd];
+Close[filename];
+,
+defs="No available definitions.";
+];
+
+Return[defs];
+
+];
+
+
+(* ::Subsection::Closed:: *)
+(*ClearNames*)
+
+
+SetAttributes[ClearFunctions,HoldAllComplete];
+
+ClearFunctions[names__]:=Module[{path,filename,rd,defs,wr,tofile,redundant,myset,mysetdelayed,defsclear},
+
+(*Find the package*)
+path=FindFile["SpinorHelicity6D`"];
+(*Extract the position without the package name*)
+path=FileNameTake[path,{1,FileNameDepth[path]-1}];
+(*Define the name of the file containing the definitions*)
+filename=FileNameJoin[{path,"SpinorHelicityCustomFunctions.wl"}];
+
+(*Check if a file that contains definitions already exists. If it does, open it and load its content, which will be a list of replacements*)
+If[FileExistsQ[filename],
+(*Clear definitions of the functions*)
+tofile=Hold[{names}]/.List->ClearAll;
+ReleaseHold[tofile];
+tofile={names};
+
+(*Now proceed to removing them from the file. Load the content of the file*)
+rd=OpenRead[filename];
+defs=Read[rd];
+Close[filename];
+
+(*Clear definitions of all the stored functions*)
+defsclear=defs/.{Rule[g_[__],_]:>ClearAll[g],RuleDelayed[g_[__],_]:>ClearAll[g]};
+defsclear=defsclear/.{RuleDelayed[x_,y_]:>Clear[x],Rule[x_,y_]:>Clear[x]};
+ReleaseHold[defsclear];
+defs=DeleteCases[defs//ReleaseHold,x_/;AnyTrue[tofile,(!FreeQ[x[[1]],#]&)]];
+tofile=defs;
+,
+Return["No file from which to remove the definitions has been found."];
+];
+
+(*Open a stream to write to the file*)
+wr=OpenWrite[filename];
+(*Write to the file*)
+Write[wr,Hold/@tofile];
+(*Close the stream*)
+Close[filename];
+
+(*Convert rules to Set and SetDelayed so that the functions are evaluated and usable*)
+tofile/.{RuleDelayed[x_,y_]/;FreeQ[x,Pattern]:>Set[x,y],RuleDelayed[x_,y_]/;!FreeQ[x,Pattern]:>SetDelayed[x,y],Rule[x_,y_]/;FreeQ[x,Pattern]:>Set[x,y],Rule[x_,y_]/;!FreeQ[x,Pattern]:>SetDelayed[x,y]};
+
+];
+
+
+(*Clear all the definitions in the file and delete the file itself.*)
+
+ClearFunctions[]:=Module[{path,filename,rd,defs,defsclear},
+
+(*Find the package*)
+path=FindFile["SpinorHelicity6D`"];
+(*Extract the position without the package name*)
+path=FileNameTake[path,{1,FileNameDepth[path]-1}];
+(*Define the name of the file containing the definitions*)
+filename=FileNameJoin[{path,"SpinorHelicityCustomFunctions.wl"}];
+
+If[FileExistsQ[filename],
+(*Load the content of the file*)
+rd=OpenRead[filename];
+defs=Read[rd];
+Close[filename];
+
+(*Clear definitions of all the stored functions*)
+defsclear=defs/.{Rule[g_[__],_]:>ClearAll[g],RuleDelayed[g_[__],_]:>ClearAll[g]};
+defsclear=defsclear/.{RuleDelayed[x_,y_]:>Clear[x],Rule[x_,y_]:>Clear[x]};
+ReleaseHold[defsclear];
+(*Then delete the file*)
+DeleteFile[filename],
+Return["No file has been found."];
+];
+];
+
+
+(* ::Subsection::Closed:: *)
+(*File loader*)
+
+
+(*(*Define the function to load the existing file with the custom-functions' definitions, if any.*)
+
+(*In order not to define unwanted global parameters we keep this inside the local context but we have to call outside of it in order to properly load the functions.*)
+
+LoadFunctions[]:=Module[{path,filename,rd,defs},
+
+(*Find the package*)
+path=FindFile["SpinorHelicity6D`"];
+(*Extract the position without the package name*)
+path=FileNameTake[path,{1,FileNameDepth[path]-1}];
+(*Define the name of the file containing the definitions*)
+filename=FileNameJoin[{path,"SpinorHelicityCustomFunctions.wl"}];
+
+(*Check if a file that contains definitions already exists. If it does, open it and save its content, which will be a list of holded replacements*)
+If[FileExistsQ[filename],
+(*Load the content of the file*)
+rd=OpenRead[filename];
+defs=Read[rd];
+Close[filename];
+defs=defs/.{Rule\[Rule]Set,RuleDelayed\[Rule]SetDelayed};
+ReleaseHold[defs];
+];
+
+];*)
+
+
+(* ::Section:: *)
 (*Attributes*)
 
 
@@ -2847,7 +4000,8 @@ KillMasses,Momenta4D,SpinorAngleBracket,SpinorAngleBracketBox,SpinorSquareBracke
 NewProcess,ClearDownValues,levicivita2up,levicivita2down,levicivita2Up,levicivita2Down,levicivita2up,levicivita2down,
 SpinorDot6D,SpinorDot6DBox,SpinorUndot6D,SpinorUndot6DBox,AngAngInvariant,AngAngInvariantBox,SquSquInvariant,SquSquInvariantBox,
 SquAngInvariant,SquAngInvariantBox,AngSquInvariant,AngSquInvariantBox,Momenta,AllMomenta,
-SpinorReplace,SubCounter,ConvenientMu,SchoutenSimplify,Mom4D,S6,S6many,MDelta,MDeltaBox,Fstrength,FstrengthBox,\[Lambda],\[Mu],\[CapitalLambda],\[CapitalMu],\[Epsilon],\[Delta],FixedSpinors,ClearSpinors,FixSpinors,CompleteDenominators,CompleteMandelstam,ToChain,Chain,chain,$angle,$square,S},Protected]
+SpinorReplace,SubCounter,ConvenientMu,SchoutenSimplify,Mom4D,S6,S6many,MDelta,MDeltaBox,Fstrength,FstrengthBox,\[Lambda],\[Mu],\[CapitalLambda],\[CapitalMu],\[Epsilon],\[Delta],FixedSpinors,ClearSpinors,FixSpinors,CompleteDenominators,CompleteMandelstam,ToChain,Chain,chain,$angle,$square,S,
+MasslessQ,DeclareMom,UndeclareMom,ChainMomCon},Protected]
 
 
 (* ::Section:: *)
@@ -2859,25 +4013,77 @@ SpinorPalette:=CreatePalette[Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{Spi
 ];
 
 
-If[frontend==1,
+(*If[frontend==1,
 CreatePalette[Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],SpinorUndotPureMBox["\[SelectionPlaceholder]"],SpinorDotPureMBox["\[SelectionPlaceholder]"],SpinorUndot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorDot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SquAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[AngAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[SquSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[RowBox[{"\[CapitalMu][","\[SelectionPlaceholder]","]"}]],Defer[extramass[\[SelectionPlaceholder]]]],PasteButton[RawBoxes[RowBox[{OverscriptBox["\[CapitalMu]","~"],"[","\[SelectionPlaceholder]","]"}]],Defer[extramasstilde[\[SelectionPlaceholder]]]]}}],Spacings->Automatic],WindowTitle->"SpinorHelicity6D"];
+];*)
+
+
+(*If[frontend==1,
+CreatePalette[Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],SpinorUndotPureMBox["\[SelectionPlaceholder]"],SpinorDotPureMBox["\[SelectionPlaceholder]"],SpinorUndot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorDot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SquAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[AngAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[SquSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[RowBox[{"\[CapitalMu][","\[SelectionPlaceholder]","]"}]],Defer[extramass[\[SelectionPlaceholder]]]],PasteButton[RawBoxes[RowBox[{OverscriptBox["\[CapitalMu]","~"],"[","\[SelectionPlaceholder]","]"}]],Defer[extramasstilde[\[SelectionPlaceholder]]]]}},Partition[PasteButton[RawBoxes[#]]&/@{AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"]},4]],Spacings->Automatic],WindowTitle->"SpinorHelicity6D"];
+];*)
+
+
+(*If[frontend==1,
+CreatePalette[Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SpinorMuUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureMBox["\[SelectionPlaceholder]"],SpinorDotPureMBox["\[SelectionPlaceholder]"],SpinorUndot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorDot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SquAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[AngAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[SquSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[RowBox[{"\[CapitalMu][","\[SelectionPlaceholder]","]"}]],Defer[extramass[\[SelectionPlaceholder]]]],PasteButton[RawBoxes[RowBox[{OverscriptBox["\[CapitalMu]","~"],"[","\[SelectionPlaceholder]","]"}]],Defer[extramasstilde[\[SelectionPlaceholder]]]]}}],Spacings->Automatic],WindowTitle->"SpinorHelicity6D"];
+];*)
+
+
+(*If[frontend==1,
+CreatePalette[Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SpinorMuUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureMBox["\[SelectionPlaceholder]"],SpinorDotPureMBox["\[SelectionPlaceholder]"],SpinorUndot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorDot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SquAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[AngAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[SquSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[RowBox[{"\[CapitalMu][","\[SelectionPlaceholder]","]"}]],Defer[extramass[\[SelectionPlaceholder]]]],PasteButton[RawBoxes[RowBox[{OverscriptBox["\[CapitalMu]","~"],"[","\[SelectionPlaceholder]","]"}]],Defer[extramasstilde[\[SelectionPlaceholder]]]]}},{OpenerView[{"test","test2"}]}],Spacings->Automatic],WindowTitle->"SpinorHelicity6D"];
+];*)
+
+
+(*If[frontend==1,
+CreatePalette[DynamicModule[{opener1=True,opener2=False},Column[{OpenerView[{"4 dimensions",Grid[{{Grid[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"]},4],Spacings->Automatic]},{Grid[{PasteButton[RawBoxes[#]]&/@{SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"]}}]}}]},Dynamic[opener1,(opener1=#;opener2=!opener2)&]],OpenerView[{"6 dimensions",Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],SpinorUndotPureMBox["\[SelectionPlaceholder]"],SpinorDotPureMBox["\[SelectionPlaceholder]"],SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SquSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[SpinorUndot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[SpinorDot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[RowBox[{"\[CapitalMu][","\[SelectionPlaceholder]","]"}]],Defer[extramass[\[SelectionPlaceholder]]]],PasteButton[RawBoxes[RowBox[{OverscriptBox["\[CapitalMu]","~"],"[","\[SelectionPlaceholder]","]"}]],Defer[extramasstilde[\[SelectionPlaceholder]]]]}},Partition[PasteButton[RawBoxes[#]]&/@{},4]],Spacings->Automatic]},Dynamic[opener2,(opener2=#;opener1=!opener1)&]]}]],WindowTitle\[Rule]"Palette"];
+];*)
+
+
+If[frontend==1,
+CreatePalette[DynamicModule[{opener1=True,opener2=False},Column[{OpenerView[{"4 dimensions",Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"]]],SpanFromLeft,PasteButton[RawBoxes[SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"]]],SpanFromLeft}}],Spacings->{2,0.6}]},Dynamic[opener1,(opener1=#;opener2=!opener2)&]],OpenerView[{"6 dimensions",Grid[Join[Partition[PasteButton[RawBoxes[#]]&/@{SpinorLaUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLaDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorLatDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMuDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutUpBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorMutDownBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorUndotPureLBox["\[SelectionPlaceholder]"],SpinorDotPureLBox["\[SelectionPlaceholder]"],SpinorUndotPureMBox["\[SelectionPlaceholder]"],SpinorDotPureMBox["\[SelectionPlaceholder]"],SpinorAngleBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],SpinorSquareBracketBox["\[SelectionPlaceholder]", "\[Placeholder]"],levicivita2upBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],levicivita2downBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngleSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],AngleAngleChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SquareSquareChainBox["\[SelectionPlaceholder]",ToBoxes[{\[SelectionPlaceholder]}],"\[SelectionPlaceholder]"],SpinorUndot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SpinorDot6DBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],SquAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"],AngSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]},4],{{PasteButton[RawBoxes[AngAngInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[SquSquInvariantBox["\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]","\[SelectionPlaceholder]"]]],PasteButton[RawBoxes[RowBox[{"\[CapitalMu][","\[SelectionPlaceholder]","]"}]],Defer[extramass[\[SelectionPlaceholder]]]],PasteButton[RawBoxes[RowBox[{OverscriptBox["\[CapitalMu]","~"],"[","\[SelectionPlaceholder]","]"}]],Defer[extramasstilde[\[SelectionPlaceholder]]]]}},Partition[PasteButton[RawBoxes[#]]&/@{},4]],Spacings->Automatic]},Dynamic[opener2,(opener2=#;opener1=!opener1)&]]}]],WindowTitle->"SpinorHelicity6D"];
 ];
 
 
 Print["===============SpinorHelicity6D================"];
 Print["Authors: Manuel Accettulli Huber (QMUL)"];
-Print["         Stefano De Angelis (QMUL)"];
 Print["Please report any bug to:"];
 Print["m.accettullihuber@qmul.ac.uk"];
-Print["s.deangelis@qmul.ac.uk"];
-Print["Version 1.2 , last update 14/10/2019"];
-Print["==============================================="];
+Print["Version 1.2 , last update 05/06/2020"];
+Print["============================================="];
 
 
 If[TrueQ[$MachineID=="6239-87290-05914"],Speak["Ubi maior minor cessat"]];
 (*If[TrueQ[$MachineID=="5113-13572-95048"],Speak["Tricche tracche bombe a mano"]];*)
 
 
+(*End the private context*)
 End[]
 
+(*End the package*)
 EndPackage[]
+
+
+(*Now that we are in the global context, load the file with user-defined definitions*)
+
+Module[{path,filename,rd,defs},
+
+(*Find the package*)
+path=FindFile["SpinorHelicity6D`"];
+(*Extract the position without the package name*)
+path=FileNameTake[path,{1,FileNameDepth[path]-1}];
+(*Define the name of the file containing the definitions*)
+filename=FileNameJoin[{path,"SpinorHelicityCustomFunctions.wl"}];
+
+(*Check if a file that contains definitions already exists. If it does, open it and save its content, which will be a list of holded replacements*)
+If[FileExistsQ[filename],
+(*Load the content of the file*)
+(*rd=OpenRead[filename];
+defs=Read[rd];
+Close[filename];
+defs=defs/.{Rule->Set,RuleDelayed->SetDelayed};
+ReleaseHold[defs];*)
+
+(<<SpinorHelicityCustomFunctions`)/.{Rule->Set,RuleDelayed->SetDelayed}//ReleaseHold;
+
+];
+
+];
