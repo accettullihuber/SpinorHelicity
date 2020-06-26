@@ -2160,7 +2160,7 @@ Return[locexp];
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*mp*)
 
 
@@ -2195,6 +2195,9 @@ mp[x_,y_]/;FreeQ[x,MomPure]&&FreeQ[x,PolarPure]:=mp[MomPure[x]/.{a_/;MemberQ[Mom
 mp[A_*MomPure[x_]+y_,z_]:=A*mp[MomPure[x],z]+mp[y,z];
 mp[MomPure[x_]+y_,z_]:=mp[MomPure[x],z]+mp[y,z];
 mp[Times[A_,x_],y_]:=A*mp[x,y];
+mp[z_,A_*MomPure[x_]+y_]:=A*mp[MomPure[x],z]+mp[y,z];
+mp[z_,MomPure[x_]+y_]:=mp[MomPure[x],z]+mp[y,z];
+mp[y_,Times[A_,x_]]:=A*mp[x,y];
 
 
 mp /: MakeBoxes[mp[x_,y_],StandardForm|TraditionalForm]:=mpBox[ToBoxes[x],ToBoxes[y]];
@@ -3368,39 +3371,44 @@ Return[locexp];
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HelicityWeight*)
 
 
-HelicityWeight[exp_]:=Module[{locexp,pow,weight},
+HelicityWeight::unequalweight="Some terms have unequal weights, please check input.";
 
-(*Replace every function with itself times a weight function*)
-locexp=exp/.{SpinorAngleBracket[x_,y_]:>1/(pow[x]pow[y])SpinorAngleBracket[x,y],SpinorSquareBracket[x_,y_]:>pow[x]pow[y]SpinorSquareBracket[x,y],Chain[$angle,x_,{k__},y_,$angle]:>1/pow[x]*1/pow[y]*Chain[$angle,x,{k},y,$angle],Chain[$square,x_,{k__},y_,$square]:>pow[x]pow[y]Chain[$square,x,{k},y,$square],Chain[$angle,x_,{k__},y_,$square]:>1/pow[x]*pow[y]Chain[$angle,x,{k},y,$square],Chain[$square,x_,{k__},y_,$angle]:>pow[x]1/pow[y]Chain[$square,x,{k},y,$angle]};
+HelicityWeight[exp_]:=Module[{moms,locexp,weight,hel},
+(*Extract all the momenta in the expression*)
+moms=Join[Cases[{exp},HoldPattern[SpinorAngleBracket[x_,y_]|SpinorSquareBracket[x_,y_]|mp[x_,y_]|S[x_,y_]|S4[x_,y_]]:>Sequence[x,y],\[Infinity]],Cases[{exp},HoldPattern[Chain[type1_,x_,{y__},z_,type2_]]:>Sequence[x,y,z],\[Infinity]]]//DeleteDuplicates;
+(*Remove form the expression everything which is not needed, i.e. all multiplicative factors are turned into 1s, upon expanding*)
+locexp=exp//Expand;
+locexp=locexp//.Times[x_,y_]/;FreeQ[x,SpinorAngleBracket|SpinorSquareBracket|Chain]:>y;
 
-(*Collect the weights, taking into account the weight 0 possibility which is special*)
-locexp=Expand[locexp,pow];
-If[FreeQ[locexp,pow],
-locexp=weight[locexp,"weight 0 in all spinors"],
-locexp=locexp/.{Power[pow[x_],n_]:>pow[{x,n}]};
-locexp=locexp//.{pow[x_List]*pow[y_List]:>pow[{x,y}]};
-locexp=Collect[locexp,pow[_]];
-locexp=locexp/.{A_*pow[x_List]:>weight[A,x]}//Expand;
-locexp=locexp/.{A_*weight[B_,x_]:>weight[A*B,x]};
-locexp=locexp/.{A_+weight[x__]/;FreeQ[A,weight]:>weight[A,"weight 0 in all spinors"]+weight[x]};
-locexp=locexp/.{weight[A_,x_List]:>weight[A,Partition[Flatten[x],2]]};
+(*Do the power counting using the weight function*)
+locexp=locexp/.{SpinorAngleBracket[x_,y_]:>weight[x,-1]weight[y,-1],SpinorSquareBracket[x_,y_]:>weight[x,1]weight[y,1],Chain[$angle,x_,{y__},z_,$angle]:>weight[x,-1]weight[z,-1],Chain[$angle,x_,{y__},z_,$square]:>weight[x,-1]weight[z,1],Chain[$square,x_,{y__},z_,$angle]:>weight[x,1]weight[z,-1],
+Chain[$square,x_,{y__},z_,$square]:>weight[x,1]weight[z,1]};
+
+(*Take powers into account and recollect weights*)
+locexp=locexp//.{Power[weight[x_,n_],m_]:>weight[x,n*m],weight[x_,n_]*weight[x_,m_]:>weight[x,n+m]};
+
+(*If locexp now still contains a sum of any kind it means that the terms are not uniform in the spinor weight. The ToString replacement is needed so that spinor arguments like n+1 are still allowed*)
+If[!FreeQ[locexp/.weight[x_,n_]:>weight[ToString[x],n],Plus],
+Message[HelicityWeight::unequalweight];
+Return[$Failed];
 ];
 
-If[Head[locexp]===weight,
-locexp={locexp},
-locexp=List@@locexp;
-];
-locexp=locexp/.weight->List;
-If[Length[locexp]==1,
-Return[locexp[[1,2]]],
-Print["The terms have unequal weights, please check input."];
-Return[locexp];
-];
+(*Putting things together*)
+hel={};
+locexp/.weight[x_,n_]:>(hel=Join[hel,{{x,n}}];1);
 
+(*Append the missing momenta with weight zero*)
+Do[If[FreeQ[hel,i],
+hel=Join[hel,{{i,0}}]
+];
+,{i,moms}];
+
+(*Sort and return output*)
+Return[hel//Sort];
 ];
 
 
