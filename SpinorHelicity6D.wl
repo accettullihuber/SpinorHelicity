@@ -258,6 +258,7 @@ $DeltaDim::usage="Option for Delta. Allows to set the dimension of the delta fun
 
 
 Antisymmetrize::usage="Antisymmetrize[exp,{A1,...,An},{B1,...,Bm},...] returns exp antisymmetrized on the indices in the index lists. Be careful, the indices in the list need to be in the same order as in exp for all the signs to be correct in the output."
+SymmetrizeSH::usage="SymmetrizeSH[exp,{A1,...,An},{B1,...,Bm},...] returns exp symmetrized on the indices in the index lists."
 
 
 Fstrength::usage="Fstrength[momlabel][A,B][C,D][lg,lgdot] is the field strength of mmentum momlabel, with A,B Lorentz indices transforming in the fundamental representation and C,D in th eantifundamental, and lg,lgdot little group indices."
@@ -2160,7 +2161,7 @@ Return[locexp];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*mp*)
 
 
@@ -2204,7 +2205,7 @@ mp /: MakeBoxes[mp[x_,y_],StandardForm|TraditionalForm]:=mpBox[ToBoxes[x],ToBoxe
 SetAttributes[mp,{Orderless,Protected}];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*mpN6*)
 
 
@@ -2651,7 +2652,7 @@ SpinorSquareBracketN[OverBar[x_],y_]:=SpinorSquareBracketN[OverBar[x],y]=SpinorD
 SpinorSquareBracketN[OverBar[x_],OverBar[y_]]:=SpinorSquareBracketN[OverBar[x],OverBar[y]]=SpinorDotN[x][$mu][$down].SpinorDotN[y][$mu][$up];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Auxiliary functions for GenSpinors*)
 
 
@@ -3221,7 +3222,7 @@ Return[{{lamdown,lamdotup},{mudown,mudotup},mass,masstil}];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*MomToSpinors*)
 
 
@@ -3371,7 +3372,7 @@ Return[locexp];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HelicityWeight*)
 
 
@@ -3579,6 +3580,40 @@ debugPrint[combos];
 localexp=output;
 output={};
 Do[AppendTo[output,(Signature[combos[[i]]]/canonicalsign)*localexp/.Table[localindices[[k,j]]->combos[[i,j]],{j,len}]],{i,Length[combos]}];
+output=(1/(len!))*Plus@@output//Expand;
+,{k,nsubs}];
+
+(*Before returning the result release the hold on the expression*)
+output=ReleaseHold[output];
+Return[output];
+];
+
+
+(* ::Subsection:: *)
+(*SymmetrizeSH*)
+
+
+SetAttributes[SymmetrizeSH,HoldFirst];
+
+SymmetrizeSH[exp_,indices__List]:=Module[{len,combos,localexp,output,localindices,nsubs},
+(*Start by counting the number of different lists given as input*)
+localindices={indices};
+nsubs=Length[localindices];
+
+output=HoldForm[exp];
+
+(*Now we loop over every single list of antisymmetrized indices*)
+Do[
+(*Generate all the possible reshuffelings of the indices in list*)
+len=Length[localindices[[k]]];
+combos=Permutations[localindices[[k]]];
+debugPrint[combos];
+
+(*Now do the replacements in the expression*)
+localexp=output;
+output={};
+Do[AppendTo[output,localexp/.Table[localindices[[k,j]]->combos[[i,j]],{j,len}]],{i,Length[combos]}];
+debugPrint[output];
 output=(1/(len!))*Plus@@output//Expand;
 ,{k,nsubs}];
 
