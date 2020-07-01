@@ -3372,11 +3372,11 @@ Return[locexp];
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HelicityWeight*)
 
 
-HelicityWeight::unequalweight="Some terms have unequal weights, please check input.";
+(*HelicityWeight::unequalweight="Some terms have unequal weights, please check input.";
 
 HelicityWeight[exp_]:=Module[{moms,locexp,weight,hel},
 (*Extract all the momenta in the expression*)
@@ -3410,7 +3410,49 @@ hel=Join[hel,{{i,0}}]
 
 (*Sort and return output*)
 Return[hel//Sort];
+];*)
+
+
+HelicityWeight::unequalweight="Some terms have unequal weights, please check input.";
+
+HelicityWeight[exp_]:=Module[{moms,locexp,weight,hel},
+(*Extract all the momenta in the expression*)
+moms=Join[Cases[{exp},HoldPattern[SpinorAngleBracket[x_,y_]|SpinorSquareBracket[x_,y_]|mp[x_,y_]|S[x_,y_]|S4[x_,y_]]:>Sequence[x,y],\[Infinity]],Cases[{exp},HoldPattern[Chain[type1_,x_,{y__},z_,type2_]]:>Sequence[x,y,z],\[Infinity]]]//DeleteDuplicates;
+(*Remove form the expression everything which is not needed, i.e. all multiplicative factors are turned into 1s, upon expanding*)
+locexp=exp//Expand;
+locexp=locexp//.Times[x_,y_]/;FreeQ[x,SpinorAngleBracket|SpinorSquareBracket|Chain]:>y;
+
+(*Do the power counting using the weight function*)
+locexp=locexp/.{SpinorAngleBracket[x_,y_]:>weight[x,-1]weight[y,-1],SpinorSquareBracket[x_,y_]:>weight[x,1]weight[y,1],Chain[$angle,x_,{y__},z_,$angle]:>weight[x,-1]weight[z,-1],Chain[$angle,x_,{y__},z_,$square]:>weight[x,-1]weight[z,1],Chain[$square,x_,{y__},z_,$angle]:>weight[x,1]weight[z,-1],
+Chain[$square,x_,{y__},z_,$square]:>weight[x,1]weight[z,1]};
+
+(*Take powers into account and recollect weights*)
+locexp=locexp//.{Power[weight[x_,n_],m_]:>weight[x,n*m],weight[x_,n_]*weight[x_,m_]:>weight[x,n+m]};
+
+(*Now remove the scalars*)
+hel={};
+locexp=locexp/.weight[x_,0]:>(hel=Join[hel,{{x,0}}];1);
+(*scalars might appear in multiple terms, so we delete the duplicates*)
+hel=hel//DeleteDuplicates;
+
+(*If locexp now still contains a sum of any kind it means that the terms are not uniform in the spinor weight. The ToString replacement is needed so that spinor arguments like n+1 are still allowed*)
+If[!FreeQ[locexp/.weight[x_,n_]:>weight[ToString[x],n],Plus],
+Message[HelicityWeight::unequalweight];
+Return[$Failed];
 ];
+
+(*Putting things together*)
+locexp/.weight[x_,n_]:>(hel=Join[hel,{{x,n}}];1);
+
+(*Append the missing momenta with weight zero*)
+Do[If[FreeQ[hel,i],
+hel=Join[hel,{{i,0}}]
+];
+,{i,moms}];
+
+(*Sort and return output*)
+Return[hel//Sort];
+]
 
 
 (* ::Subsection::Closed:: *)
@@ -3589,7 +3631,7 @@ Return[output];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*SymmetrizeSH*)
 
 
