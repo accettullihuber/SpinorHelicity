@@ -2212,7 +2212,7 @@ SetAttributes[mp,{Orderless,Protected}];
 (*mpToSpinors*)
 
 
-mpToSpinors[exp_]:=exp//.{mp[i_,j_]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>SpinorAngleBracket[i,j]SpinorSquareBracket[j,i],mp[MomPure[i_],MomPure[j_]]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>SpinorAngleBracket[MomPure[i],MomPure[j]]SpinorSquareBracket[MomPure[j],MomPure[i]]};
+mpToSpinors[exp_]:=exp//.{mp[i_,j_]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>1/2*SpinorAngleBracket[i,j]SpinorSquareBracket[j,i],mp[MomPure[i_],MomPure[j_]]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>1/2*SpinorAngleBracket[MomPure[i],MomPure[j]]SpinorSquareBracket[MomPure[j],MomPure[i]]};
 
 
 (* ::Subsection::Closed:: *)
