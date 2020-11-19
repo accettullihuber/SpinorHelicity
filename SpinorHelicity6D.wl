@@ -164,6 +164,7 @@ $square::usage="Global variable of SpinorHelicity6D, labels square brackets."
 
 
 mp::usage="mp[p_a,p_b] is the four-dimensional scalar product fo momenta p_a and p_b. mp[] has the attribute Orderless."
+mpToSpinors::usage="mpToSpinors[exp] converts all scalar products in exp into \!\(\*SubscriptBox[\(s\), \(ij\)]\)->\[LeftAngleBracket]ij\[RightAngleBracket][ji] provide \!\(\*SubscriptBox[\(p\), \(i\)]\) and \!\(\*SubscriptBox[\(p\), \(j\)]\) are massless."
 SetMp::usage="SetMp[list] takes as input a list of replacements of the type mp[x,y]->... and allows to fix given scalar products to a deisred value."
 Mps::usage="Mps is the list of scalar products which have been fixed to a certain value."
 ClearMp::usage="ClearMp[mp[p1,p2],...] clears the definitions of the scalar products given as arguments. If ClearMp is called without arguments all the scalar products are cleared."
@@ -1199,7 +1200,7 @@ Return[locexp];
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*Momenta*)
 
 
@@ -1836,7 +1837,7 @@ Return[loc];
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*ToChain*)
 
 
@@ -2205,6 +2206,13 @@ mp[y_,Times[A_,x_]]:=A*mp[x,y];
 
 mp /: MakeBoxes[mp[x_,y_],StandardForm|TraditionalForm]:=mpBox[ToBoxes[x],ToBoxes[y]];
 SetAttributes[mp,{Orderless,Protected}];
+
+
+(* ::Subsection:: *)
+(*mpToSpinors*)
+
+
+mpToSpinors[exp_]:=exp//.{mp[i_,j_]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>SpinorAngleBracket[i,j]SpinorSquareBracket[j,i],mp[MomPure[i_],MomPure[j_]]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>SpinorAngleBracket[MomPure[i],MomPure[j]]SpinorSquareBracket[MomPure[j],MomPure[i]]};
 
 
 (* ::Subsection::Closed:: *)
