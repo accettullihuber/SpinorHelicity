@@ -1067,7 +1067,7 @@ ClearSubValues[SpinorDot6D];
 Protect[AngSquInvariant,SquAngInvariant,AngAngInvariant,SquSquInvariant,SpinorDot6D,SpinorUndot6D];);
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*SpinorReplace*)
 
 
@@ -1098,6 +1098,9 @@ locreps={reps}/.Dot->dot//Flatten;
 locreps=locreps/.{a_/;MemberQ[MomList,a]:>MomPure[a]};
 locreps=locreps//.{SpinorUndotPure[a_+b_][type_]/;!FreeQ[b,MomPure]:>SpinorUndotPure[a][type]+SpinorUndotPure[b][type],SpinorDotPure[a_+b_][type_]/;!FreeQ[b,MomPure]:>SpinorDotPure[a][type]+SpinorDotPure[b][type],SpinorUndotPure[a_*MomPure[x_]][type_]:>a*SpinorUndotPure[MomPure[x]][type],SpinorDotPure[a_*MomPure[x_]][type_]:>a*SpinorDotPure[MomPure[x]][type]};
 locreps=locreps/.{MomPure[x_]:>x};
+(*In order for linearity with respect to wrappers to be correctly applied later on expand the right hand side of the replacement whenever SpinorDotPure or SpinorUndotPure are present*)
+locreps=ReplacePart[#,-1->Expand[Last[#],SpinorUndotPure|SpinorDotPure]]&/@locreps;
+
 
 (*Isolate the replacements containing matrices which will get special treatment*)
 special=Select[locreps,(!FreeQ[#,dot]&)];
