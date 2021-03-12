@@ -989,7 +989,7 @@ AngSquInvariantN[a_, b_][2,1]:=AngSquInvariantN[a, b][2,1]=-((ExtramasstildeN[b]
 AngSquInvariantN[a_, b_][2,2]:=AngSquInvariantN[a, b][2,2]=-SpinorAngleBracketN[a,b]-(ExtramassN[b]*ExtramasstildeN[a]*SpinorSquareBracketN[OverBar[a],OverBar[b]])/(SpinorSquareBracketN[a,OverBar[a]]*SpinorSquareBracketN[b,OverBar[b]]);*)
 
 
-AngSquInvariantN[a_, b_][c_,d_]:=AngSquInvariantN[a, b][c,d]=SpinorUndot6DN[a][$down][c].SpinorDot6DN[b][$down][d];
+AngSquInvariantN[a_, b_][c_,d_]:=AngSquInvariantN[a, b][c,d]=SpinorUndot6DN[a][$down][c] . SpinorDot6DN[b][$down][d];
 
 
 (* ::Subsection::Closed:: *)
@@ -1001,7 +1001,7 @@ SquAngInvariantN[a_,b_][1,2]:=SquAngInvariantN[a,b][1,2]=-((ExtramasstildeN[a]*S
 SquAngInvariantN[a_,b_][2,1]:=SquAngInvariantN[a,b][2,1]=-((ExtramassN[b]*SpinorAngleBracketN[a,OverBar[b]])/SpinorAngleBracketN[b,OverBar[b]])+(ExtramassN[a]*SpinorSquareBracketN[b,OverBar[a]])/SpinorSquareBracketN[a,OverBar[a]];
 SquAngInvariantN[a_,b_][2,2]:=SquAngInvariantN[a,b][2,2]=SpinorAngleBracketN[a,b]+(ExtramassN[a]*ExtramasstildeN[b]*SpinorSquareBracketN[OverBar[a],OverBar[b]])/(SpinorSquareBracketN[a,OverBar[a]]*SpinorSquareBracketN[b,OverBar[b]]);*)
 
-SquAngInvariantN[a_,b_][c_,d_]:=SquAngInvariantN[a,b][c,d]=SpinorDot6DN[a][$down][c].SpinorUndot6DN[b][$down][d];
+SquAngInvariantN[a_,b_][c_,d_]:=SquAngInvariantN[a,b][c,d]=SpinorDot6DN[a][$down][c] . SpinorUndot6DN[b][$down][d];
 
 
 (* ::Subsection::Closed:: *)
@@ -1027,8 +1027,8 @@ SpinorUndot6D[momlabel_][index_][Null][1]:={-extramass[momlabel]/Spinoranglebrac
 SpinorUndot6D[momlabel_][index_][Null][2]:={Spinorundot[momlabel][$lam][Null][index],-extramasstilde[momlabel]/Spinorsquarebracket[momlabel,overbar[momlabel]]*Spinordot[momlabel][$mu][index][Null]};
 SpinorDot6D[momlabel_][index_][Null][1]:={extramasstilde[momlabel]/Spinoranglebracket[momlabel,overbar[momlabel]]*Spinorundot[momlabel][$mu][index][Null],-Spinordot[momlabel][$lam][Null][index]};
 SpinorDot6D[momlabel_][index_][Null][2]:={Spinorundot[momlabel][$lam][index][Null],-extramass[momlabel]/Spinorsquarebracket[momlabel,overbar[momlabel]]*Spinordot[momlabel][$mu][Null][index]};
-SquAngInvariant[n_,m_][a_Integer,b_Integer]:=SpinorDot6D[n][$contractvariable][Null][a].SpinorUndot6D[m][$contractvariable][Null][b];
-AngSquInvariant[n_,m_][a_Integer,b_Integer]:=SpinorUndot6D[n][$contractvariable][Null][a].SpinorDot6D[m][$contractvariable][Null][b];
+SquAngInvariant[n_,m_][a_Integer,b_Integer]:=SpinorDot6D[n][$contractvariable][Null][a] . SpinorUndot6D[m][$contractvariable][Null][b];
+AngSquInvariant[n_,m_][a_Integer,b_Integer]:=SpinorUndot6D[n][$contractvariable][Null][a] . SpinorDot6D[m][$contractvariable][Null][b];
 AngAngInvariant[i_,j_,k_,l_][a_Integer,b_Integer,c_Integer,d_Integer]:=
 First[SpinorUndot6D[i][$contractvariable1][Null][a]]First[SpinorUndot6D[j][$contractvariable2][Null][b]]Last[SpinorUndot6D[k][$contractvariable3][Null][c]]Last[SpinorUndot6D[l][$contractvariable4][Null][d]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[i][$contractvariable1][Null][a]]First[SpinorUndot6D[k][$contractvariable2][Null][c]]Last[SpinorUndot6D[l][$contractvariable3][Null][d]]Last[SpinorUndot6D[j][$contractvariable4][Null][b]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[i][$contractvariable1][Null][a]]First[SpinorUndot6D[l][$contractvariable2][Null][d]]Last[SpinorUndot6D[j][$contractvariable3][Null][b]]Last[SpinorUndot6D[k][$contractvariable4][Null][c]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[k][$contractvariable1][Null][c]]First[SpinorUndot6D[l][$contractvariable2][Null][d]]Last[SpinorUndot6D[i][$contractvariable3][Null][a]]Last[SpinorUndot6D[j][$contractvariable4][Null][b]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[l][$contractvariable1][Null][d]]First[SpinorUndot6D[j][$contractvariable2][Null][b]]Last[SpinorUndot6D[i][$contractvariable3][Null][a]]Last[SpinorUndot6D[k][$contractvariable4][Null][c]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[j][$contractvariable1][Null][b]]First[SpinorUndot6D[k][$contractvariable2][Null][c]]Last[SpinorUndot6D[i][$contractvariable3][Null][a]]Last[SpinorUndot6D[l][$contractvariable4][Null][d]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4];
 SquSquInvariant[i_,j_,k_,l_][a_Integer,b_Integer,c_Integer,d_Integer]:=
@@ -1050,8 +1050,8 @@ SpinorUndot6D[momlabel_][index_][Null][1]:={-extramass[momlabel]/Spinoranglebrac
 SpinorUndot6D[momlabel_][index_][Null][2]:={Spinorundot[momlabel][$lam][Null][index],-extramasstilde[momlabel]/Spinorsquarebracket[momlabel,overbar[momlabel]]*Spinordot[momlabel][$mu][index][Null]};
 SpinorDot6D[momlabel_][index_][Null][1]:={extramasstilde[momlabel]/Spinoranglebracket[momlabel,overbar[momlabel]]*Spinorundot[momlabel][$mu][index][Null],-Spinordot[momlabel][$lam][Null][index]};
 SpinorDot6D[momlabel_][index_][Null][2]:={Spinorundot[momlabel][$lam][index][Null],-extramass[momlabel]/Spinorsquarebracket[momlabel,overbar[momlabel]]*Spinordot[momlabel][$mu][Null][index]};
-	SquAngInvariant[n_,m_][a_Integer,b_Integer]:=SpinorDot6D[n][$contractvariable][Null][a].SpinorUndot6D[m][$contractvariable][Null][b];
-	AngSquInvariant[n_,m_][a_Integer,b_Integer]:=SpinorUndot6D[n][$contractvariable][Null][a].SpinorDot6D[m][$contractvariable][Null][b];
+	SquAngInvariant[n_,m_][a_Integer,b_Integer]:=SpinorDot6D[n][$contractvariable][Null][a] . SpinorUndot6D[m][$contractvariable][Null][b];
+	AngSquInvariant[n_,m_][a_Integer,b_Integer]:=SpinorUndot6D[n][$contractvariable][Null][a] . SpinorDot6D[m][$contractvariable][Null][b];
 	AngAngInvariant[i_,j_,k_,l_][a_Integer,b_Integer,c_Integer,d_Integer]:=
 First[SpinorUndot6D[i][$contractvariable1][Null][a]]First[SpinorUndot6D[j][$contractvariable2][Null][b]]Last[SpinorUndot6D[k][$contractvariable3][Null][c]]Last[SpinorUndot6D[l][$contractvariable4][Null][d]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[i][$contractvariable1][Null][a]]First[SpinorUndot6D[k][$contractvariable2][Null][c]]Last[SpinorUndot6D[l][$contractvariable3][Null][d]]Last[SpinorUndot6D[j][$contractvariable4][Null][b]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[i][$contractvariable1][Null][a]]First[SpinorUndot6D[l][$contractvariable2][Null][d]]Last[SpinorUndot6D[j][$contractvariable3][Null][b]]Last[SpinorUndot6D[k][$contractvariable4][Null][c]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[k][$contractvariable1][Null][c]]First[SpinorUndot6D[l][$contractvariable2][Null][d]]Last[SpinorUndot6D[i][$contractvariable3][Null][a]]Last[SpinorUndot6D[j][$contractvariable4][Null][b]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[l][$contractvariable1][Null][d]]First[SpinorUndot6D[j][$contractvariable2][Null][b]]Last[SpinorUndot6D[i][$contractvariable3][Null][a]]Last[SpinorUndot6D[k][$contractvariable4][Null][c]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4]+First[SpinorUndot6D[j][$contractvariable1][Null][b]]First[SpinorUndot6D[k][$contractvariable2][Null][c]]Last[SpinorUndot6D[i][$contractvariable3][Null][a]]Last[SpinorUndot6D[l][$contractvariable4][Null][d]]*levicivita2up[$contractvariable1,$contractvariable2]levicivita2down[$contractvariable3,$contractvariable4];
 	SquSquInvariant[i_,j_,k_,l_][a_Integer,b_Integer,c_Integer,d_Integer]:=
@@ -1630,7 +1630,7 @@ SchoutenRules =
 
 (* Generates all possibile Schouten identities associated with a given set of momenta. *)
 SchoutenIdentities[momenta_List] :=
-    ({a,b,c,d} \[Function]
+    ({a,b,c,d} |->
         Sequence@@
             {SpinorAngleBracket[a,b] SpinorAngleBracket[c,d] + SpinorAngleBracket[b,c] SpinorAngleBracket[a,d] + SpinorAngleBracket[c,a] SpinorAngleBracket[b,d] == 0,
              SpinorSquareBracket[a,b] SpinorSquareBracket[c,d] + SpinorSquareBracket[b,c] SpinorSquareBracket[a,d] + SpinorSquareBracket[c,a] SpinorSquareBracket[b,d] == 0})@@@
@@ -1640,7 +1640,7 @@ SchoutenIdentities[momenta_List] :=
 SchoutenSimplify[expr_] :=
     Simplify[expr,
         Assumptions -> SchoutenIdentities[Momenta[expr]],
-        TransformationFunctions -> {Automatic, (e \[Function] e /. SchoutenRules)}]
+        TransformationFunctions -> {Automatic, (e |-> e /. SchoutenRules)}]
 
 
 (* ::Subsection::Closed:: *)
@@ -1663,6 +1663,13 @@ S6[x_,y_]:=-extramass[x]extramasstilde[y]-extramass[y]extramasstilde[x]+Mom4D[x]
 
 
 SetAttributes[S,Orderless];
+
+
+(* ::Subsection:: *)
+(*SNum*)
+
+
+SNum[x__]:=SNum[x]=Total@Join[2*mpN6@@@Subsets[{x},{2}],mpN6/@{x}];
 
 
 (* ::Subsection::Closed:: *)
@@ -1830,17 +1837,17 @@ count=1;
 ];
 pos[n_?OddQ]:=$up;
 pos[n_?EvenQ]:=$down;
-Do[loc=MomMat4DN[i][pos[count++]].loc,{i,Reverse[{p2}]}];
+Do[loc=MomMat4DN[i][pos[count++]] . loc,{i,Reverse[{p2}]}];
 If[type1===$angle,
-loc=SpinorUndotN[p1][$lam][$up].loc;
+loc=SpinorUndotN[p1][$lam][$up] . loc;
 ,
-loc=SpinorDotN[p1][$lam][$down].loc;
+loc=SpinorDotN[p1][$lam][$down] . loc;
 ];
 Return[loc];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*ToChain*)
 
 
@@ -2218,7 +2225,7 @@ SetAttributes[mp,{Orderless,Protected}];
 mpToSpinors[exp_]:=exp//.{mp[i_,j_]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>1/2*SpinorAngleBracket[i,j]SpinorSquareBracket[j,i],mp[MomPure[i_],MomPure[j_]]/;MemberQ[Momenta4D,i]&&MemberQ[Momenta4D,j]:>1/2*SpinorAngleBracket[MomPure[i],MomPure[j]]SpinorSquareBracket[MomPure[j],MomPure[i]]};
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*mpN6*)
 
 
@@ -2649,20 +2656,20 @@ Return[localexp];
 (*SpinorAngleBracketN*)
 
 
-SpinorAngleBracketN[x_,y_]:=SpinorAngleBracketN[x,y]=SpinorUndotN[x][$lam][$up].SpinorUndotN[y][$lam][$down];
-SpinorAngleBracketN[x_,OverBar[y_]]:=SpinorAngleBracketN[x,OverBar[y]]=SpinorUndotN[x][$lam][$up].SpinorUndotN[y][$mu][$down];
-SpinorAngleBracketN[OverBar[x_],y_]:=SpinorAngleBracketN[OverBar[x],y]=SpinorUndotN[x][$mu][$up].SpinorUndotN[y][$lam][$down];
-SpinorAngleBracketN[OverBar[x_],OverBar[y_]]:=SpinorAngleBracketN[OverBar[x],OverBar[y]]=SpinorUndotN[x][$mu][$up].SpinorUndotN[y][$mu][$down];
+SpinorAngleBracketN[x_,y_]:=SpinorAngleBracketN[x,y]=SpinorUndotN[x][$lam][$up] . SpinorUndotN[y][$lam][$down];
+SpinorAngleBracketN[x_,OverBar[y_]]:=SpinorAngleBracketN[x,OverBar[y]]=SpinorUndotN[x][$lam][$up] . SpinorUndotN[y][$mu][$down];
+SpinorAngleBracketN[OverBar[x_],y_]:=SpinorAngleBracketN[OverBar[x],y]=SpinorUndotN[x][$mu][$up] . SpinorUndotN[y][$lam][$down];
+SpinorAngleBracketN[OverBar[x_],OverBar[y_]]:=SpinorAngleBracketN[OverBar[x],OverBar[y]]=SpinorUndotN[x][$mu][$up] . SpinorUndotN[y][$mu][$down];
 
 
 (* ::Subsection::Closed:: *)
 (*SpinorSquareBracketN*)
 
 
-SpinorSquareBracketN[x_,y_]:=SpinorSquareBracketN[x,y]=SpinorDotN[x][$lam][$down].SpinorDotN[y][$lam][$up];
-SpinorSquareBracketN[x_,OverBar[y_]]:=SpinorSquareBracketN[x,OverBar[y]]=SpinorDotN[x][$lam][$down].SpinorDotN[y][$mu][$up];
-SpinorSquareBracketN[OverBar[x_],y_]:=SpinorSquareBracketN[OverBar[x],y]=SpinorDotN[x][$mu][$down].SpinorDotN[y][$lam][$up];
-SpinorSquareBracketN[OverBar[x_],OverBar[y_]]:=SpinorSquareBracketN[OverBar[x],OverBar[y]]=SpinorDotN[x][$mu][$down].SpinorDotN[y][$mu][$up];
+SpinorSquareBracketN[x_,y_]:=SpinorSquareBracketN[x,y]=SpinorDotN[x][$lam][$down] . SpinorDotN[y][$lam][$up];
+SpinorSquareBracketN[x_,OverBar[y_]]:=SpinorSquareBracketN[x,OverBar[y]]=SpinorDotN[x][$lam][$down] . SpinorDotN[y][$mu][$up];
+SpinorSquareBracketN[OverBar[x_],y_]:=SpinorSquareBracketN[OverBar[x],y]=SpinorDotN[x][$mu][$down] . SpinorDotN[y][$lam][$up];
+SpinorSquareBracketN[OverBar[x_],OverBar[y_]]:=SpinorSquareBracketN[OverBar[x],OverBar[y]]=SpinorDotN[x][$mu][$down] . SpinorDotN[y][$mu][$up];
 
 
 (* ::Subsection:: *)
@@ -3004,7 +3011,7 @@ Return[Table[{lam[i],lamtil[i]},{i,3}]];
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*GenSpinorsAux*)
 
 
@@ -3118,8 +3125,8 @@ Do[
 		SpinorDotN[lab6[[i]]][$mu][$down]=ls[i+n];
 		SpinorDotN[lab6[[i]]][$mu][$up]=rs[i+n];
 		(*Masses:*)
-		ExtramassN[lab6[[i]]]=la[i].ra[i+n];
-		ExtramasstildeN[lab6[[i]]]=ls[i+n].rs[i];
+		ExtramassN[lab6[[i]]]=la[i] . ra[i+n];
+		ExtramasstildeN[lab6[[i]]]=ls[i+n] . rs[i];
 		,{i,Length[lab6]}];
 (*4D part*)
 Do[
@@ -3153,7 +3160,7 @@ Return["Numerical kinematics has been generated."];
 ClearDependentKinematics[]:=Block[{},
 
 (*Clearing functions with DownValues*)
-ClearDownValues[#]&/@{SpinorAngleBracketN,SpinorSquareBracketN,Mom4DN,Mom6DN,ChainN,mpN6};
+ClearDownValues[#]&/@{SpinorAngleBracketN,SpinorSquareBracketN,Mom4DN,Mom6DN,ChainN,mpN6,SNum};
 
 (*Clearing functions with SubValues*)
 ClearSubValues[#]&/@{SpinorUndot6DN,SpinorDot6DN,AngSquInvariantN,SquAngInvariantN,AngAngInvariantN,SquSquInvariantN,MomMat4DN,MomMat6DN};
@@ -3161,7 +3168,7 @@ ClearSubValues[#]&/@{SpinorUndot6DN,SpinorDot6DN,AngSquInvariantN,SquAngInvarian
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*GenSpinors*)
 
 
@@ -3366,7 +3373,7 @@ Return[out];
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*ClearKinematics*)
 
 
@@ -3405,8 +3412,8 @@ SpinorUndot6DN[a_][$down][2]:=SpinorUndot6DN[a][$down][2]=({SpinorUndotN[a][$lam
 SpinorDot6DN[a_][$down][1]:=SpinorDot6DN[a][$down][1]=({(ExtramasstildeN[a]*SpinorUndotN[a][$mu][$up])/SpinorAngleBracketN[a,OverBar[a]],-SpinorDotN[a][$lam][$down]}//Flatten);
 SpinorDot6DN[a_][$down][2]:=SpinorDot6DN[a][$down][2]=({SpinorUndotN[a][$lam][$up],-((ExtramassN[a]*SpinorDotN[a][$mu][$down])/SpinorSquareBracketN[a,OverBar[a]])}//Flatten);
 (*And now the invariants*)
-AngSquInvariantN[a_, b_][c_,d_]:=AngSquInvariantN[a, b][c,d]=SpinorUndot6DN[a][$down][c].SpinorDot6DN[b][$down][d];
-SquAngInvariantN[a_,b_][c_,d_]:=SquAngInvariantN[a,b][c,d]=SpinorDot6DN[a][$down][c].SpinorUndot6DN[b][$down][d];
+AngSquInvariantN[a_, b_][c_,d_]:=AngSquInvariantN[a, b][c,d]=SpinorUndot6DN[a][$down][c] . SpinorDot6DN[b][$down][d];
+SquAngInvariantN[a_,b_][c_,d_]:=SquAngInvariantN[a,b][c,d]=SpinorDot6DN[a][$down][c] . SpinorUndot6DN[b][$down][d];
 AngAngInvariantN[x1_,x2_,x3_,x4_][a_,b_,c_,d_]:=AngAngInvariantN[x1,x2,x3,x4][a,b,c,d]=-Det[{SpinorUndot6DN[x1][$down][a],SpinorUndot6DN[x2][$down][b],SpinorUndot6DN[x3][$down][c],SpinorUndot6DN[x4][$down][d]}];
 SquSquInvariantN[x1_,x2_,x3_,x4_][a_,b_,c_,d_]:=SquSquInvariantN[x1,x2,x3,x4][a,b,c,d]=-Det[{SpinorDot6DN[x1][$down][a],SpinorDot6DN[x2][$down][b],SpinorDot6DN[x3][$down][c],SpinorDot6DN[x4][$down][d]}];
 );
@@ -3416,23 +3423,30 @@ SquSquInvariantN[x1_,x2_,x3_,x4_][a_,b_,c_,d_]:=SquSquInvariantN[x1,x2,x3,x4][a,
 (*ToNum*)
 
 
-ToNum[exp_]:=exp/.S->S6/.{SpinorAngleBracket->SpinorAngleBracketN,SpinorSquareBracket->SpinorSquareBracketN,Extramass->ExtramassN,Extramasstilde->ExtramasstildeN,AngSquInvariant->AngSquInvariantN,SquAngInvariant->SquAngInvariantN,AngAngInvariant->AngAngInvariantN,SquSquInvariant->SquSquInvariantN,Chain->ChainN,mp->mpN6,SpinorUndot[mom_][$lam][a_][Null]:>SpinorUndotN[mom][$lam][$up],SpinorUndot[mom_][$lam][Null][a_]:>SpinorUndotN[mom][$lam][$down],SpinorUndot[mom_][$mu][a_][Null]:>SpinorUndotN[mom][$mu][$up],SpinorUndot[mom_][$mu][Null][a_]:>SpinorUndotN[mom][$mu][$down],
-SpinorDot[mom_][$lam][a_][Null]:>SpinorDotN[mom][$lam][$up],SpinorDot[mom_][$lam][Null][a_]:>SpinorDotN[mom][$lam][$down],SpinorDot[mom_][$mu][a_][Null]:>SpinorDotN[mom][$mu][$up],SpinorDot[mom_][$mu][Null][a_]:>SpinorDotN[mom][$mu][$down],SpinorUndot6D[mom_][A_][Null][a_]:>SpinorUndot6DN[mom][$down][a],SpinorDot6D[mom_][A_][Null][a_]:>SpinorDot6DN[mom][$down][a]};
+(*ToNum[exp_]:=exp/.S->S6/.{SpinorAngleBracket->SpinorAngleBracketN,SpinorSquareBracket->SpinorSquareBracketN,Extramass->ExtramassN,Extramasstilde->ExtramasstildeN,AngSquInvariant->AngSquInvariantN,SquAngInvariant->SquAngInvariantN,AngAngInvariant->AngAngInvariantN,SquSquInvariant->SquSquInvariantN,Chain->ChainN,mp->mpN6,SpinorUndot[mom_][$lam][a_][Null]:>SpinorUndotN[mom][$lam][$up],SpinorUndot[mom_][$lam][Null][a_]:>SpinorUndotN[mom][$lam][$down],SpinorUndot[mom_][$mu][a_][Null]:>SpinorUndotN[mom][$mu][$up],SpinorUndot[mom_][$mu][Null][a_]:>SpinorUndotN[mom][$mu][$down],
+SpinorDot[mom_][$lam][a_][Null]:>SpinorDotN[mom][$lam][$up],SpinorDot[mom_][$lam][Null][a_]:>SpinorDotN[mom][$lam][$down],SpinorDot[mom_][$mu][a_][Null]:>SpinorDotN[mom][$mu][$up],SpinorDot[mom_][$mu][Null][a_]:>SpinorDotN[mom][$mu][$down],SpinorUndot6D[mom_][A_][Null][a_]:>SpinorUndot6DN[mom][$down][a],SpinorDot6D[mom_][A_][Null][a_]:>SpinorDot6DN[mom][$down][a]};*)
+
+
+ToNum[exp_]:=Block[{S,SpinorAngleBracket,SpinorSquareBracket,Extramass,Extramasstilde,AngSquInvariant,SquAngInvariant,AngAngInvariant,SquSquInvariant,Chain,mp,SpinorUndot,SpinorDot,SpinorUndot6D,SpinorDot6D},
+S=SNum;SpinorAngleBracket=SpinorAngleBracketN;SpinorSquareBracket=SpinorSquareBracketN;Extramass=ExtramassN;Extramasstilde=ExtramasstildeN;AngSquInvariant=AngSquInvariantN;SquAngInvariant=SquAngInvariantN;AngAngInvariant=AngAngInvariantN;SquSquInvariant=SquSquInvariantN;Chain=ChainN;mp=mpN6;SpinorUndot[mom_][$lam][a_][Null]:=SpinorUndotN[mom][$lam][$up];SpinorUndot[mom_][$lam][Null][a_]:=SpinorUndotN[mom][$lam][$down];SpinorUndot[mom_][$mu][a_][Null]:=SpinorUndotN[mom][$mu][$up];SpinorUndot[mom_][$mu][Null][a_]:=SpinorUndotN[mom][$mu][$down];
+SpinorDot[mom_][$lam][a_][Null]:=SpinorDotN[mom][$lam][$up];SpinorDot[mom_][$lam][Null][a_]:=SpinorDotN[mom][$lam][$down];SpinorDot[mom_][$mu][a_][Null]:=SpinorDotN[mom][$mu][$up];SpinorDot[mom_][$mu][Null][a_]:=SpinorDotN[mom][$mu][$down];SpinorUndot6D[mom_][A_][Null][a_]:=SpinorUndot6DN[mom][$down][a];SpinorDot6D[mom_][A_][Null][a_]:=SpinorDot6DN[mom][$down][a];
+exp
+];
 
 
 (* ::Subsection:: *)
 (*MomMat4D*)
 
 
-MomMat4DN[label_][$up]:=MomMat4DN[label][$up]=InverseDot[SpinorDotN[label][$lam][$up],SpinorUndotN[label][$lam][$up]]-(ExtramassN[label]ExtramasstildeN[label])/(SpinorDotN[label][$lam][$down].SpinorDotN[label][$mu][$up] SpinorUndotN[label][$lam][$up].SpinorUndotN[label][$mu][$down])*InverseDot[SpinorDotN[label][$mu][$up],SpinorUndotN[label][$mu][$up]];
-MomMat4DN[label_][$down]:=MomMat4DN[label][$down]=InverseDot[SpinorUndotN[label][$lam][$down],SpinorDotN[label][$lam][$down]]-(ExtramassN[label]ExtramasstildeN[label])/(SpinorDotN[label][$lam][$down].SpinorDotN[label][$mu][$up] SpinorUndotN[label][$lam][$up].SpinorUndotN[label][$mu][$down])*InverseDot[SpinorUndotN[label][$mu][$down],SpinorDotN[label][$mu][$down]];
+MomMat4DN[label_][$up]:=MomMat4DN[label][$up]=InverseDot[SpinorDotN[label][$lam][$up],SpinorUndotN[label][$lam][$up]]-(ExtramassN[label]ExtramasstildeN[label])/(SpinorDotN[label][$lam][$down] . SpinorDotN[label][$mu][$up] SpinorUndotN[label][$lam][$up] . SpinorUndotN[label][$mu][$down])*InverseDot[SpinorDotN[label][$mu][$up],SpinorUndotN[label][$mu][$up]];
+MomMat4DN[label_][$down]:=MomMat4DN[label][$down]=InverseDot[SpinorUndotN[label][$lam][$down],SpinorDotN[label][$lam][$down]]-(ExtramassN[label]ExtramasstildeN[label])/(SpinorDotN[label][$lam][$down] . SpinorDotN[label][$mu][$up] SpinorUndotN[label][$lam][$up] . SpinorUndotN[label][$mu][$down])*InverseDot[SpinorUndotN[label][$mu][$down],SpinorDotN[label][$mu][$down]];
 
 
 (* ::Subsection:: *)
 (*Mom4DN*)
 
 
-Mom4DN[label_]:=Mom4DN[label]=1/2*{Tr[MomMat4DN[label][$up].PauliMatrix[0]],Tr[MomMat4DN[label][$up].PauliMatrix[1]],Tr[MomMat4DN[label][$up].PauliMatrix[2]],Tr[MomMat4DN[label][$up].PauliMatrix[3]]};
+Mom4DN[label_]:=Mom4DN[label]=1/2*{Tr[MomMat4DN[label][$up] . PauliMatrix[0]],Tr[MomMat4DN[label][$up] . PauliMatrix[1]],Tr[MomMat4DN[label][$up] . PauliMatrix[2]],Tr[MomMat4DN[label][$up] . PauliMatrix[3]]};
 
 
 (* ::Subsection:: *)
@@ -3447,7 +3461,7 @@ MomMat6DN[label_][$down]:=MomMat6DN[label][$down]=InverseDot[SpinorDot6DN[label]
 (*Mom6DN*)
 
 
-Mom6DN[label_]:=Mom6DN[label]=1/4{Tr[MomMat6DN[label][$up].PauliSix[0]],Tr[MomMat6DN[label][$up].PauliSix[1]],Tr[MomMat6DN[label][$up].PauliSix[2]],Tr[MomMat6DN[label][$up].PauliSix[3]],Tr[MomMat6DN[label][$up].PauliSix[4]],Tr[MomMat6DN[label][$up].PauliSix[5]]};
+Mom6DN[label_]:=Mom6DN[label]=1/4{Tr[MomMat6DN[label][$up] . PauliSix[0]],Tr[MomMat6DN[label][$up] . PauliSix[1]],Tr[MomMat6DN[label][$up] . PauliSix[2]],Tr[MomMat6DN[label][$up] . PauliSix[3]],Tr[MomMat6DN[label][$up] . PauliSix[4]],Tr[MomMat6DN[label][$up] . PauliSix[5]]};
 
 
 (* ::Subsection:: *)
@@ -3582,8 +3596,8 @@ muup={k,-z};
 lamdotdown={-yt,xt};
 mudotdown={-kt,zt};
 
-mass=lamup.mudown;
-masstil=mudotdown.lamdotup;
+mass=lamup . mudown;
+masstil=mudotdown . lamdotup;
 
 (*Apply //N if required*)
 If[TrueQ[precise],
@@ -3767,7 +3781,7 @@ Return[locexp];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HelicityWeight*)
 
 
