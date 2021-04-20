@@ -314,10 +314,13 @@ Begin["`Private`"]
 (*We define a private variable needed for the package to decide whether to run shortcuts and the palette or not. This is related to the availability of a frontend.*)
 
 
-frontend=If[TrueQ[$FrontEnd==Null],0,1];
+(*parallelSH is a private variable which we externally set to True if we do parallel computations. It is used to avoid the defintions of shortcuts on the Parallel kernels as well as all the printing.*)
 
 
-(* ::Subsection::Closed:: *)
+frontend=If[TrueQ[$FrontEnd==Null]||parallelSH===True,0,1];
+
+
+(* ::Subsection:: *)
 (*Infycheck*)
 
 
@@ -643,7 +646,7 @@ SetOptions[EvaluationNotebook[],InputAliases -> DeleteDuplicates@Append[InputAli
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*SpinorUndotN and SpinorDotN*)
 
 
@@ -1067,7 +1070,7 @@ ClearSubValues[SpinorDot6D];
 Protect[AngSquInvariant,SquAngInvariant,AngAngInvariant,SquSquInvariant,SpinorDot6D,SpinorUndot6D];);
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*SpinorReplace*)
 
 
@@ -1203,7 +1206,7 @@ Return[locexp];
 ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*Momenta*)
 
 
@@ -1665,7 +1668,7 @@ S6[x_,y_]:=-extramass[x]extramasstilde[y]-extramass[y]extramasstilde[x]+Mom4D[x]
 SetAttributes[S,Orderless];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*SNum*)
 
 
@@ -2764,7 +2767,8 @@ sol=Solve[system,{\[Xi][1],\[Xi][2],\[Eta][2],\[Xi]t[3],\[Xi]t[1+n],\[Xi]t[2+n]}
 
 (*Safety check*)
 If[sol==={},
-Throw["Anomalous kinematic point has been randomly generated, momentum conservation could not be solved."],
+Message[GenSpinors::unsolvablekinematics];
+Throw[$Failed],
 sol=sol//First;
 ];
 
@@ -2844,7 +2848,8 @@ sol=Solve[system,{\[Xi][1],\[Xi][2],\[Eta][1],\[Eta][2]}];
 
 (*Safety check*)
 If[sol==={},
-Throw["Anomalous kinematic point has been randomly generated, momentum conservation could not be solved."],
+Message[GenSpinors::unsolvablekinematics];
+Throw[$Failed],
 sol=sol//First;
 ];
 
@@ -2868,7 +2873,7 @@ GenerateKinematicsFixed4D::overconstrained="Maximum number of momenta which can 
 
 GenerateKinematicsFixed4D::undeclaredmom="One of the fixing conditions is not well defined. Did you declare the necessary momenta? Proceed randomizing the undefined momentum.";
 
-GenerateKinematicsFixed4D::unsolvablekinematics="Anomalous kinematic point has been randomly generated, momentum conservation could not be solved.";
+GenSpinors::unsolvablekinematics="Anomalous kinematic point has been randomly generated, momentum conservation could not be solved.";
 
 
 GenerateKinematicsFixed4D[nlegs_Integer,fixedmom_List,OptionsPattern[]]:=Catch[Module[{\[Xi],\[Eta],\[Xi]t,\[Eta]t,random,system,sol,out,input},
@@ -2928,7 +2933,7 @@ sol=Solve[system,{\[Xi][nlegs-1],\[Xi][nlegs],\[Eta][nlegs-1],\[Eta][nlegs]}];
 
 (*Safety check*)
 If[sol==={},
-Message[GenerateKinematicsFixed4D::unsolvablekinematics];
+Message[GenSpinors::unsolvablekinematics];
 Throw[$Failed],
 sol=sol//First;
 ];
@@ -3011,7 +3016,7 @@ Return[Table[{lam[i],lamtil[i]},{i,3}]];
 ];
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*GenSpinorsAux*)
 
 
@@ -3071,7 +3076,7 @@ type===0,
 n=Length[lab4];
 kinem=Table[{la[i],rs[i]},{i,n}];
 kinem2=GenerateKinematics4D[n,{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName]}];
-If[Head[kinem2]===String,Throw[kinem2]];
+If[kinem2===$Failed,Throw[kinem2]];
 Evaluate[kinem]=kinem2;
 ,
 type===1,
@@ -3079,7 +3084,7 @@ type===1,
 n=Length[lab4]+Length[lab6];
 kinem={Table[{la[i],rs[i],la[i+n],rs[i+n]},{i,Length[lab6]}],Table[{la[i],rs[i]},{i,Length[lab6]+1,n}]};
 kinem2=GenerateKinematics[n,Length[lab4],{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName]}];
-If[Head[kinem2]===String,Throw[kinem2]];
+If[kinem2===$Failed,Throw[kinem2]];
 Evaluate[kinem]=kinem2;
 ,
 type===2,
@@ -3087,7 +3092,7 @@ type===2,
 n=Length[lab6];
 kinem={Table[{la[i],rs[i],la[i+n],rs[i+n]},{i,n}],{}};
 kinem2=GenerateKinematics[n,0,{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName]}];
-If[Head[kinem2]===String,Throw[kinem2]];
+If[kinem2===$Failed,Throw[kinem2]];
 Evaluate[kinem]=kinem2;
 ];
 ,
@@ -3153,7 +3158,7 @@ Return["Numerical kinematics has been generated."];
 ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsubsection::Closed:: *)
 (*ClearDependentKinematics*)
 
 
@@ -3168,7 +3173,18 @@ ClearSubValues[#]&/@{SpinorUndot6DN,SpinorDot6DN,AngSquInvariantN,SquAngInvarian
 ];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsubsection:: *)
+(*KinematicCheck*)
+
+
+(*KinematicCheck checks that the generated kinematic makes sense*)
+
+
+Attributes[KinematicCheck]={HoldAll};
+KinematicCheck[x_]:=TrueQ[Quiet[Check[x,$Failed,{PowerMod::ninv,Power::infy,Infinity::indet,Power::indet,GenSpinors::unsolvablekinematics}],{PowerMod::ninv,Power::infy,Infinity::indet,Power::indet,GenSpinors::unsolvablekinematics}]==$Failed];
+
+
+(* ::Subsection:: *)
 (*GenSpinors*)
 
 
@@ -3302,7 +3318,7 @@ While[test,
 Which[Length[labels3pt=labels]===3&&OptionValue[Dimension]===4,
 ClearDependentKinematics[];
 (*Generate kinematics*)
-test=Infycheck[out=GenKinematics3pt[OptionValue[Type3pt],{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],SetMomentum->OptionValue[SetMomentum]}]];
+test=KinematicCheck[out=GenKinematics3pt[OptionValue[Type3pt],{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],SetMomentum->OptionValue[SetMomentum]}]];
 (*Assign labels if non-singular kinematics has been generated*)
 If[!test,
 {{SpinorUndotN[labels3pt[[1]]][$lam][$up],SpinorDotN[labels3pt[[1]]][$lam][$up]},{SpinorUndotN[labels3pt[[2]]][$lam][$up],SpinorDotN[labels3pt[[2]]][$lam][$up]},{SpinorUndotN[labels3pt[[3]]][$lam][$up],SpinorDotN[labels3pt[[3]]][$lam][$up]}}=out;
@@ -3332,7 +3348,7 @@ MatchQ[labels,{{},{_,_,_}}],
 ClearDependentKinematics[];
 labels3pt=labels[[2]];
 (*Generate kinematics*)
-test=Infycheck[out=GenKinematics3pt[OptionValue[Type3pt],{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],SetMomentum->OptionValue[SetMomentum]}]];
+test=KinematicCheck[out=GenKinematics3pt[OptionValue[Type3pt],{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],SetMomentum->OptionValue[SetMomentum]}]];
 (*Assign labels if non-singular kinematics has been generated*)
 If[!test,
 {{SpinorUndotN[labels3pt[[1]]][$lam][$up],SpinorDotN[labels3pt[[1]]][$lam][$up]},{SpinorUndotN[labels3pt[[2]]][$lam][$up],SpinorDotN[labels3pt[[2]]][$lam][$up]},{SpinorUndotN[labels3pt[[3]]][$lam][$up],SpinorDotN[labels3pt[[3]]][$lam][$up]}}=out;
@@ -3366,7 +3382,7 @@ Break[];
 ,
 True,
 (*Proceed with the higher point kinematics generation*)
-test=Infycheck[out=GenSpinorsAux[labels,{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName],Seed->OptionValue[Seed],Dimension->OptionValue[Dimension],DisplaySpinors->OptionValue[DisplaySpinors],SetMomentum->OptionValue[SetMomentum]}]];
+test=KinematicCheck[out=GenSpinorsAux[labels,{RationalKinematics->OptionValue[RationalKinematics],ParameterRange->OptionValue[ParameterRange],Parametric->OptionValue[Parametric],ParameterName->OptionValue[ParameterName],Seed->OptionValue[Seed],Dimension->OptionValue[Dimension],DisplaySpinors->OptionValue[DisplaySpinors],SetMomentum->OptionValue[SetMomentum]}]];
 ];
 ];
 Return[out];
@@ -4537,12 +4553,14 @@ CreatePalette[DynamicModule[{opener1=True,opener2=False},Column[{OpenerView[{"4 
 ];
 
 
+If[frontend==1,
 Print["===============SpinorHelicity6D================"];
 Print["Authors: Manuel Accettulli Huber (QMUL)"];
 Print["Please report any bug to:"];
 Print["m.accettullihuber@qmul.ac.uk"];
 Print["Version 1.2 , last update 05/06/2020"];
 Print["============================================="];
+];
 
 
 If[TrueQ[$MachineID=="6239-87290-05914"],Speak["Ubi maior minor cessat"]];
